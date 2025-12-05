@@ -1,3 +1,8 @@
+
+####################
+#### SIMULATION ####
+####################
+
 GOAL: To stress-test different “replication methods” under realistic preclinical conditions, and see which ones are the most credible.
 
 To recapitulate a preclinical trajectory I have included the following:
