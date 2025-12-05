@@ -14,10 +14,11 @@ library(readxl)
 
 # Import empyrical effect sizes --------------------------------------------
 
+data_dir <- "empyrical_effect_size_datasets"
 
-# Empyrical ES database from Bonapersona 2021 (https://www.nature.com/articles/s41593-020-00792-3)
+#### Empyrical ES dataset: Bonapersona 2021 #### 
+# (https://www.nature.com/articles/s41593-020-00792-3)
 # field: neuroscience and metabolism
-
 # login to OSF via token
 # osf_auth("6IKuU0C6eBogBCNmilT4s972LnDZJrQlfggilZEbG7wxmal6Ooifewwb18A5SkgIwETEpd")
 # 
@@ -26,23 +27,48 @@ library(readxl)
 # osf_download(file,
 #             path = "C:/Users/paspe/Desktop/scripts/ResearchTrajectory-master/input",
 #             conflicts = "overwrite")
-save_path <- "C:/Users/paspe/OneDrive - Charité - Universitätsmedizin Berlin/Desktop/DECIDE_I/DECIDE_analysis/simulation/Bonapersona_2021"
-meta <- read.csv("C:/Users/paspe/OneDrive - Charité - Universitätsmedizin Berlin/Desktop/scripts/ResearchTrajectory-master/input/meta_effectsize.csv")
+
 dataset_name <- "Bonapersona_2021"
 
-# Pessimistic dataset from Carneiro 2018 (doi: 10.1371/journal.pone.0196258.)
-# Note: this df has smaller and negative ES (S error). Outcome: rodent fear conditioning.
-# load("C:/Users/paspe/OneDrive - Charité - Universitätsmedizin Berlin/Desktop/scripts/ResearchTrajectory-master/sim_pessimistic/data/ES_data_Carneiro.RData")
-# meta <- ES_data_Carneiro
-# setnames(meta, "ES_d", "yi")
-# save_path <- "C:/Users/paspe/OneDrive - Charité - Universitätsmedizin Berlin/Desktop/DECIDE_I/DECIDE_analysis/simulation/effect_sizes_carneiro2018.pdf"
+meta <- read.csv(
+  file.path(data_dir, "meta_effectsize_bonapersona.csv")
+)
+
+save_dir <- file.path("simulation_results", dataset_name)
+if (!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
+
+save_path <- file.path(save_dir, paste0("effect_sizes_", dataset_name, ".pdf"))
+
+# #### Empyrical ES dataset: Carneiro 2018 (Pessimistic) ####
+# # # (doi: 10.1371/journal.pone.0196258.)
+# # # Note: this df has smaller and negative ES (S error). Outcome: rodent fear conditioning.
+# 
 # dataset_name <- "Carneiro_2018"
-
-# Anxiety dataset, https://doi.org/10.1016/j.neubiorev.2022.104928
-# meta <- read_excel("C:/Users/paspe/OneDrive - Charité - Universitätsmedizin Berlin/Desktop/DECIDE_I/DECIDE_analysis/simulation/ES_datasets/SR1_0_forR.xlsx", sheet = "default")
-# save_path <- "C:/Users/paspe/OneDrive - Charité - Universitätsmedizin Berlin/Desktop/DECIDE_I/DECIDE_analysis/simulation/effect_sizes_rosso2022.pdf"
+# 
+# load(file.path(data_dir, "es_data_carneiro.RData"))
+# meta <- ES_data_Carneiro
+# data.table::setnames(meta, "ES_d", "yi")
+# 
+# save_dir <- file.path("simulation_results", dataset_name)
+# if (!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
+# 
+# save_path <- file.path(save_dir, paste0("effect_sizes_", dataset_name, ".pdf"))
+# 
+# #### Empyrical ES dataset: Rosso 2022 ####
+# # Anxiety dataset, https://doi.org/10.1016/j.neubiorev.2022.104928
 # dataset_name <- "Rosso_2022"
+# 
+# meta <- readxl::read_excel(
+#   file.path(data_dir, "SR1_0_forR_rosso.xlsx"),
+#   sheet = "default"
+# )
+# 
+# save_dir <- file.path("simulation_results", dataset_name)
+# if (!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
+# 
+# save_path <- file.path(save_dir, paste0("effect_sizes_", dataset_name, ".pdf"))
 
+#### ES distribution plot ####
 
 effect_sizes <- 
   ggplot(meta, aes(x = yi)) +
@@ -91,6 +117,7 @@ effect_sizes
 plot_name <- paste0("Effect_size_", dataset_name, ".png")
 ggsave(file.path(save_path, plot_name), 
        effect_sizes, width = 12, height = 8, dpi = 150)
+
 
 
 # Functions for study simulation ------------------------------------------
@@ -240,7 +267,7 @@ exploratory_sample_sizes <- c(5, 10, 15, 20)
 alpha <- 0.05
 exp_ss_heatmap <- 10  # select ss to plot in success rate heatmap
 shrinkage_levels <- c(0.0, 0.2, 0.5, 0.8, 0.99)
-SESOI_g <- 0.5
+SESOI_g <- 0.4
 
 # Use realistic effect size distribution
 true_effects <- sample(meta$yi[abs(meta$yi) >= 0.1 & abs(meta$yi) <= 2], 
@@ -290,54 +317,70 @@ simulation_results <- simulation_results[
 ]
 
 # Effect size classification
-effect_class = fifelse(abs(true_effect) < 0.2, "Negligible",
-                       fifelse(abs(true_effect) < 0.5, "Small", 
-                               fifelse(abs(true_effect) < 0.8, "Medium", "Large")))
+simulation_results <- simulation_results[,
+                                         effect_class := fifelse(abs(true_effect) < 0.2, "Negligible",
+                                                                 fifelse(abs(true_effect) < 0.5, "Small", 
+                                                                         fifelse(abs(true_effect) < 0.8, "Medium", "Large")))
+]
 
 # Replication methods -----------------------------------------------------
 
 
-# METHOD: basic criteria
-simulation_results[, `:=`(
-  # Direction consistency
-  direction_consistent = sign(exploratory_observed_g) == sign(confirmatory_observed_g),
-  
-  # CI overlap
-  ci_overlap = !(exploratory_ci_upper < confirmatory_ci_lower | 
-                   confirmatory_ci_upper < exploratory_ci_lower),
-  
-  # Exploratory effect in confirmatory CI
-  exp_in_conf_ci = exploratory_observed_g >= confirmatory_ci_lower & 
-    exploratory_observed_g <= confirmatory_ci_upper
+# Start with basic criteria of replication success
 
+# METHOD 1: Direction consistency
+simulation_results[, direction_consistent := sign(exploratory_observed_g) == sign(confirmatory_observed_g)]
+
+# Add more methods that build on direction consistency
+simulation_results[, `:=`(
+  # METHOD 2: CI overlap  and same sign
+  ci_overlap = !(exploratory_ci_upper < confirmatory_ci_lower | 
+                   confirmatory_ci_upper < exploratory_ci_lower) & direction_consistent,
+  
+  # METHOD 3: Exploratory effect in confirmatory CI  and same sign
+  exp_in_conf_ci = exploratory_observed_g >= confirmatory_ci_lower & 
+    exploratory_observed_g <= confirmatory_ci_upper & direction_consistent,
+  
+  # METHOD 4: two trial rule, both exploratory and confirmatory significant and same sign
+  both_significant = exploratory_p < alpha & confirmatory_p < alpha & direction_consistent
 )]
 
-# Step 2: Criteria that depend on previously created columns
-simulation_results[, both_significant := exploratory_p < alpha & 
-                     confirmatory_p < alpha & 
-                     direction_consistent]
+# METHOD 5: Sceptical p-value.
+# doi: 10.1111/rssa.12493
+# From the original study, it establish a sceptical prior centered at 0 (no effect), the posterior has a CI that has to touch the lower 
+# bound with 0 so through a reverse Bayes we back calculate from the original study and this posterior (blue) a sufficiently sceptical prior 
+# (meaning that the CI has to be the result of combining the original study and the posterior fixed at 0). We use this sufficiently sceptical
+# prior to assess the replication study. The larger the effect of the original study the narrower will be the CI of the sceptical prior that 
+# has to counterbalance the claim of the original study. 
 
-# Sceptical p-value
-simulation_results[, sceptical_p := ifelse(          # !is.finite() captures NA, NaN, and Inf.
+simulation_results[, sceptical_p := ifelse(                                   # !is.finite() captures NA, NaN, and Inf.
   !is.finite(exploratory_observed_g) | !is.finite(exploratory_se_g) | 
     !is.finite(confirmatory_observed_g) | !is.finite(confirmatory_se_g) |
     exploratory_se_g == 0 | confirmatory_se_g == 0,
   NA,
   {
-    z_o <- exploratory_observed_g / exploratory_se_g
+    z_o <- exploratory_observed_g / exploratory_se_g        # z values (g / se) of the exploratory and confirmatory studies
     z_r <- confirmatory_observed_g / confirmatory_se_g
-    var_ratio <- (exploratory_se_g / confirmatory_se_g)^2
-    p_s <- pSceptical(z_o, z_r, c = var_ratio, alternative = "two.sided", type = "golden")
+    var_ratio <- (exploratory_se_g / confirmatory_se_g)^2   # ratio of the standard errors, larger c means the confirmation has higher precision
+    
+    # pSceptical fx. Type is the calibration of the p-value. It can be "golden", "nominal" or "controlled" depending on how conservative we want the threshold for replication success to be.
+    # Golden: success only when replication ES is at least as large as the original
+    # Controlled: controls the overall type I error
+    # Nominal: no recalibration, the p-value is interpreted as is
+    p_s <- pSceptical(z_o, z_r, c = var_ratio, alternative = "two.sided", type = "golden") 
     p_s
   }
 ), by = sim_id]
 simulation_results[, sceptical_significant := sceptical_p < alpha]
 
 
-## METHOD: Small Telescopes: 
-## The logic is: Small telescope = small power. If the confirmatory has d below d33 of the original study than the original study wouldn't have enough power (small telescope) to detect such small effect
-## The exploratory studies are usually underpowered, the effect size that corresponds to 33% power d33 will be relatively large so it will be hard for the confirmatory effect size to not be smaller than d33
+## METHOD 6: Small Telescopes. 
+## The logic is: Small telescope = small power. If the confirmatory has d below d33 of the original study than the original study wouldn't have 
+# enough power (small telescope) to detect such small effect.
+# The exploratory studies are usually underpowered, the effect size that corresponds to 33% power d33 will be relatively large so it will be hard 
+# for the confirmatory effect size to not be smaller than d33
 
+# compute the d33
 simulation_results[, d33 := mapply(function(n) {
   if (is.na(n)) return(NA_real_)
   pwr.t.test(n = n, sig.level = alpha, power = 0.33,
@@ -347,31 +390,43 @@ simulation_results[, d33 := mapply(function(n) {
 # get the z score and compute the lower ci
 z_crit <- qnorm(1 - alpha)
 simulation_results[, lower_ci := confirmatory_observed_g - z_crit * confirmatory_se_g]
-# test superiority of the confirmatory d to the exploratory d33
-simulation_results[, small_telescope := lower_ci > d33]
 
-## METHOD: Smallest Detectable Effect (SDE)
+# test superiority of the confirmatory d to the exploratory d33
+simulation_results[, small_telescope := direction_consistent & 
+                     (
+                       (exploratory_observed_g > 0 & confirmatory_ci_lower >  d33) |
+                         (exploratory_observed_g < 0 & confirmatory_ci_upper < -d33)
+                     )
+]
+
+## METHOD 7: Smallest Detectable Effect (SDE)
 ## Test if the confirmatory g is superior than the smallest detectable effect size of the exploratory at 80% power
 
-# 
+# compute the SDE first
 simulation_results[, sde := mapply(function(n) {
   if (is.na(n)) return(NA_real_)
   pwr.t.test(n = n, sig.level = alpha, power = 0.8,
              type = "two.sample", alternative = "two.sided")$d
-}, exploratory_ss)]
+}, confirmatory_ss)]
 
 
 # Apply Hedges' correction to SDE
-simulation_results[, sde_g := sde * (1 - (3 / (4 * (2 * exploratory_ss) - 9)))]
+simulation_results[, sde_g := sde * (1 - (3 / (4 * (2 * confirmatory_ss) - 9)))]
 
 # Standard error for SDE effect size (equal group sizes)
-simulation_results[, se_sde := sqrt((2 * exploratory_ss)/(exploratory_ss^2) + (sde_g^2 / (4 * exploratory_ss)))]
+simulation_results[, se_sde := sqrt((2 * confirmatory_ss)/(confirmatory_ss^2) + (sde_g^2 / (4 * confirmatory_ss)))]
 
-# Confirmatory ES exceeds SDE threshold
-simulation_results[, sde_confirmed := lower_ci > sde_g]
+# Check if confirmatory ES exceeds SDE threshold
+simulation_results[, sde_confirmed := direction_consistent & 
+                     (
+                       (exploratory_observed_g > 0 & confirmatory_ci_lower >  sde_g) |
+                         (exploratory_observed_g < 0 & confirmatory_ci_upper < -sde_g)
+                     )
+]
 
-## METHOD: Smallest Effect Size of Interest (SESOI)
-# Test wether the effect size of the confirmatory is above a pre-specified (i.e. clinically meaningful) threshold
+
+## METHOD 8: Smallest Effect Size of Interest (SESOI)
+# Test whether the effect size of the confirmatory is above a pre-specified (i.e. clinically meaningful) threshold
 
 # criteria 1: the SESOI has to fall in the CI of the confirmatory g
 # simulation_results[, sesoi_in_ci := (SESOI_g >= confirmatory_ci_lower & SESOI_g <= confirmatory_ci_upper) |
@@ -382,14 +437,33 @@ simulation_results[, ci_above_sesoi := confirmatory_ci_lower >= SESOI_g | confir
 
 
 
+# Simulation results ------------------------------------------------------
+
 simulation_results[, expl_effect_size_class := factor(effect_class,
                                                       levels = c("Negligible", "Small", "Medium", "Large")
 )]
 
 
-replication_criteria <- c("direction_consistent", "ci_overlap", "exp_in_conf_ci",
-                          "both_significant", "sceptical_significant", 
-                          "small_telescope", "sde_confirmed", "ci_above_sesoi")
+replication_criteria <- c("direction_consistent", 
+                          "ci_overlap", 
+                          "exp_in_conf_ci",
+                          "both_significant", 
+                          "sceptical_significant", 
+                          "small_telescope", 
+                          "sde_confirmed", 
+                          "ci_above_sesoi")
+
+# Clean criterion names
+criterion_names <- c(
+  "direction_consistent" = "Direction Consistent",
+  "ci_overlap" = "CI Overlap", 
+  "exp_in_conf_ci" = "Exp in Conf CI",
+  "both_significant" = "Both Significant",
+  "sceptical_significant" = "Sceptical p-value", 
+  "small_telescope" = "Small Telescope",
+  "sde_confirmed" = "SDE Confirmed",
+  "ci_above_sesoi" = "Conf CI Above SESOI"
+)
 
 # Summarise by shrinkage and effect class
 summary_data_all <- simulation_results[,
@@ -415,8 +489,13 @@ plot_data[, g_shrinkage := paste0(round(shrinkage * 100), "%")]
 # Remove negligible as it's likely not replicated even if significant
 plot_data <- plot_data[expl_effect_size_class != "Negligible"]  
 
-# Plot 
-combined_heatmap <- ggplot(plot_data, aes(x = g_shrinkage, y = Criterion, fill = SuccessRate)) +
+plot_data[, Criterion_clean := factor(
+  criterion_names[Criterion],
+  levels = criterion_names[replication_criteria]
+)]
+
+#### Heatmap of the success rate ####
+combined_heatmap <- ggplot(plot_data, aes(x = g_shrinkage, y = Criterion_clean, fill = SuccessRate)) +
   geom_tile(color = "white") +
   geom_text(aes(label = sprintf("%.2f", SuccessRate)), size = 3.0) +
   scale_fill_gradient(low = "white", high = "#0072B2", limits = c(0, 1), name = "Success Rate") +
@@ -440,7 +519,7 @@ heatmap_name <- paste0("combined_heatmap_success_rate_all_classes_expn", exp_ss_
 ggsave(file.path(save_path, heatmap_name), 
        combined_heatmap, width = 12, height = 8, dpi = 150)
 
-
+#### Type I error ####
 # Calculate False Positive Rate (FPR) for 99% shrinkage cases
 # FPR = rate of claiming replication success when true effect is around 0
 fpr_data <- simulation_results[shrinkage == 0.99,
@@ -456,37 +535,8 @@ fpr_plot_data <- melt(fpr_data,
 )
 fpr_plot_data <- setDT(fpr_plot_data)
 
-# Create FPR plot across sample sizes
-fpr_plot <- ggplot(fpr_plot_data, aes(x = exploratory_n, y = FPR, color = Criterion)) +
-geom_col(alpha = 0.8, width = 0.7) +
-  scale_fill_brewer(type = "qual", palette = "Set1") +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  labs(
-    title = "False Positive Rate by Replication Criterion",
-    subtitle = "Averaged across exploratory sample sizes (99% shrinkage scenarios)",
-    x = "Replication Criterion",
-    y = "False Positive Rate",
-    fill = NULL
-  ) +
-  theme_minimal(base_size = 24) +
-  theme(
-    legend.position = "none",  # Remove legend since x-axis labels show criteria
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(size = 20, face = "bold"),
-    plot.subtitle = element_text(size = 15, color = "gray60")
-  )
 
-print(fpr_plot)
-
-# Save 
-ggsave(file.path(save_path, "fpr_by_sample_size.png"), fpr_plot, 
-       width = 15, height = 10, dpi = 150)
-
-# Print summary table
-print(fpr_data, digits = 3)
-
-
-# Plot 1 FPR bar per method (pooling exploratory sample sizes)
+# FPR bar plot per method (pooling exploratory sample sizes)
 pr_pooled_data <- fpr_plot_data %>%
   group_by(Criterion) %>%
   summarise(mean_FPR = mean(FPR, na.rm = TRUE), .groups = 'drop')
@@ -551,17 +601,6 @@ print(fpr_heatmap)
 ggsave(file.path(save_path, "fpr_heatmap_by_class.png"), fpr_heatmap, 
        width = 12, height = 8, dpi = 300)
 
-# Clean criterion names
-criterion_names <- c(
-  "direction_consistent" = "Direction Consistent",
-  "ci_overlap" = "CI Overlap", 
-  "exp_in_conf_ci" = "Exp in Conf CI",
-  "both_significant" = "Both Significant",
-  "sceptical_significant" = "Sceptical p-value", 
-  "small_telescope" = "Small Telescope",
-  "sde_confirmed" = "SDE Confirmed",
-  "ci_above_sesoi" = "Conf CI Above SESOI"
-)
 
 #### Shrinkage sensitivity ####
 shrinkage_sensitivity <- simulation_results[, {
@@ -618,7 +657,7 @@ sensitivity_plot <- ggplot(shrinkage_sensitivity,
                            ) +
   geom_boxplot(width = 0.6) +   
   facet_wrap(~expl_effect_size_class, ncol = 3) +
-  scale_fill_brewer(palette = "Set3", type = "qual") +
+  scale_fill_brewer(palette = "Set4", type = "qual", name = "Exploratory Effect Size") +
   labs(
     title = "Shrinkage Sensitivity by Effect Size Class",
     x = "Correlation (Shrinkage ~ Replication Success)",
@@ -636,22 +675,7 @@ ggsave(file.path(save_path, "shrinkage_sensitivity.png"), sensitivity_plot,
        width = 12, height = 8, dpi = 300)
 
 
-# Define replication criteria
-replication_criteria <- c("direction_consistent", "ci_overlap", "exp_in_conf_ci",
-                          "both_significant", "sceptical_significant", 
-                          "small_telescope", "sde_confirmed", "ci_above_sesoi")
 
-# Clean criterion names
-criterion_names <- c(
-  "direction_consistent" = "Direction Consistent",
-  "ci_overlap" = "CI Overlap", 
-  "exp_in_conf_ci" = "Exp in Conf CI",
-  "both_significant" = "Both Significant",
-  "sceptical_significant" = "Sceptical p-value", 
-  "small_telescope" = "Small Telescope",
-  "sde_confirmed" = "SDE Confirmed",
-  "ci_above_sesoi" = "Conf CI Above SESOI"
-)
 
 #### Precision-Recall ####
 
@@ -786,6 +810,9 @@ f1_plot <- ggplot(overall_pr, aes(x = reorder(criterion_clean, mean_f1), y = mea
 
 print(f1_plot)
 
+ggsave(file.path(save_path, "f1_score_comparison.png"), f1_plot, 
+       width = 10, height = 8, dpi = 300)
+
 # Precision vs Recall scatter plot
 pr_scatter <- ggplot(overall_pr, aes(x = mean_recall, y = mean_precision)) +
   geom_point(size = 4, alpha = 0.8, color = "#0066B5") +
@@ -806,48 +833,10 @@ pr_scatter <- ggplot(overall_pr, aes(x = mean_recall, y = mean_precision)) +
 
 print(pr_scatter)
 
-
-# PR by effect size class
-pr_by_class <- pr_summary[, .(
-  mean_f1 = mean(f1_score, na.rm = TRUE),
-  mean_precision = mean(precision, na.rm = TRUE),
-  mean_recall = mean(recall, na.rm = TRUE)
-), by = .(criterion_clean, effect_class)]
-
-f1_by_class_plot <- ggplot(pr_by_class, aes(x = reorder(criterion_clean, mean_f1), 
-                                            y = mean_f1, fill = effect_class)) +
-  geom_col(position = "dodge", alpha = 0.8) +
-  coord_flip() +
-  scale_fill_brewer(palette = "Set2", name = "Effect Size Class") +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  labs(
-    title = "F1 Score by Effect Size Class",
-    x = "Replication Criterion",
-    y = "F1 Score"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(size = 14, face = "bold"),
-    legend.position = "bottom"
-  )
-
-print(f1_by_class_plot)
-
-
-# Save plots
-ggsave(file.path(save_path, "f1_score_comparison.png"), f1_plot, 
-       width = 10, height = 8, dpi = 300)
-
 ggsave(file.path(save_path, "precision_recall_scatter.png"), pr_scatter, 
        width = 10, height = 8, dpi = 300)
 
-ggsave(file.path(save_path, "f1_by_effect_class.png"), f1_by_class_plot, 
-       width = 12, height = 8, dpi = 300)
 
-if(exists("auc_plot")) {
-  ggsave(file.path(save_path, "auc_pr_comparison.png"), auc_plot, 
-         width = 10, height = 8, dpi = 300)
-}
 
 #### Summary table ####
 
