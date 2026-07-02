@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 decide_anonymization.R
+data/SESOI_DECIDE.csv
