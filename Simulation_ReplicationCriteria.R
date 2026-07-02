@@ -25,7 +25,7 @@ data_dir <- "empyrical_effect_size_datasets"
 # file <- osf_retrieve_file("8cqwa")
 # 
 # osf_download(file,
-#             path = "C:/Users/paspe/Desktop/scripts/ResearchTrajectory-master/input",
+#             path = "",
 #             conflicts = "overwrite")
 
 dataset_name <- "Bonapersona_2021"
@@ -36,8 +36,6 @@ meta <- read.csv(
 
 save_dir <- file.path("simulation_results", dataset_name)
 if (!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
-
-save_path <- file.path(save_dir, paste0("effect_sizes_", dataset_name, ".pdf"))
 
 # #### Empyrical ES dataset: Carneiro 2018 (Pessimistic) ####
 # # # (doi: 10.1371/journal.pone.0196258.)
@@ -52,8 +50,6 @@ save_path <- file.path(save_dir, paste0("effect_sizes_", dataset_name, ".pdf"))
 # save_dir <- file.path("simulation_results", dataset_name)
 # if (!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
 # 
-# save_path <- file.path(save_dir, paste0("effect_sizes_", dataset_name, ".pdf"))
-# 
 # #### Empyrical ES dataset: Rosso 2022 ####
 # # Anxiety dataset, https://doi.org/10.1016/j.neubiorev.2022.104928
 # dataset_name <- "Rosso_2022"
@@ -66,7 +62,6 @@ save_path <- file.path(save_dir, paste0("effect_sizes_", dataset_name, ".pdf"))
 # save_dir <- file.path("simulation_results", dataset_name)
 # if (!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
 # 
-# save_path <- file.path(save_dir, paste0("effect_sizes_", dataset_name, ".pdf"))
 
 #### ES distribution plot ####
 
@@ -115,7 +110,7 @@ effect_sizes <-
 effect_sizes
 
 plot_name <- paste0("Effect_size_", dataset_name, ".png")
-ggsave(file.path(save_path, plot_name), 
+ggsave(file.path(save_dir, plot_name), 
        effect_sizes, width = 12, height = 8, dpi = 150)
 
 
@@ -124,7 +119,7 @@ ggsave(file.path(save_path, plot_name),
 
 
 # Function to simulate a single study and return all statistics
-simulate_study_complete <- function(true_effect, n_per_group, study_type = "exploratory") {
+simulate_study_complete <- function(true_effect, n_per_group) {
   # Generate data
   control_group <- rnorm(n_per_group, mean = 0, sd = 1)
   treatment_group <- rnorm(n_per_group, mean = true_effect, sd = 1)
@@ -161,7 +156,7 @@ simulate_study_complete <- function(true_effect, n_per_group, study_type = "expl
 run_research_trajectory <- function(true_effect, exploratory_n, shrinkage_factor) {
   
   # Run exploratory study and filter statistically significant ones
-  exploratory_results <- simulate_study_complete(true_effect, exploratory_n, "exploratory")
+  exploratory_results <- simulate_study_complete(true_effect, exploratory_n)
   
   if (exploratory_results$p_value < alpha) {
     sig_exploratory_results <- exploratory_results
@@ -211,13 +206,14 @@ run_research_trajectory <- function(true_effect, exploratory_n, shrinkage_factor
     ))
   }
   
-  # Calculate true effect for confirmatory study by applying the shrinakge factor:
-  # Note: shrinkage factors won't be modeled here as thy can have many sources like winner's curse, publication bias, flexible experimental methods/analyses.
+  # Calculate true effect for confirmatory study by applying the shrinkage factor:
+  # Note: shrinkage factors won't be modeled here as they can have many sources like 
+  # winner's curse, publication bias, flexible experimental methods/analyses.
   true_confirmatory_effect <- true_effect * (1 - shrinkage_factor)
   
   # Run confirmatory study
   confirmatory_results <- simulate_study_complete(true_confirmatory_effect, 
-                                                  confirmatory_n, "confirmatory")
+                                                  confirmatory_n)
   
   return(list(
     exploratory = sig_exploratory_results,
@@ -387,20 +383,25 @@ simulation_results[, d33 := mapply(function(n) {
              type = "two.sample", alternative = "two.sided")$d       # extract d33 from the exploratory sample sizes
 }, exploratory_ss)]
 
+# Apply Hedges' correction to d33
+simulation_results[, g33 := d33 * (1 - (3 / (4 * (2 * exploratory_ss) - 9)))]
+
+
 # get the z score and compute the lower ci
-z_crit <- qnorm(1 - alpha)
-simulation_results[, lower_ci := confirmatory_observed_g - z_crit * confirmatory_se_g]
+z_crit <- qnorm(1 - alpha) # one-sided z criterion
+simulation_results[, confirmatory_lower_ci := confirmatory_observed_g - z_crit * confirmatory_se_g]
+simulation_results[, confirmatory_upper_ci := confirmatory_observed_g + z_crit * confirmatory_se_g]
 
 # test superiority of the confirmatory d to the exploratory d33
 simulation_results[, small_telescope := direction_consistent & 
                      (
-                       (exploratory_observed_g > 0 & confirmatory_ci_lower >  d33) |
-                         (exploratory_observed_g < 0 & confirmatory_ci_upper < -d33)
+                       (exploratory_observed_g > 0 & confirmatory_lower_ci >  g33) |
+                         (exploratory_observed_g < 0 & confirmatory_upper_ci < -g33)
                      )
 ]
 
 ## METHOD 7: Smallest Detectable Effect (SDE)
-## Test if the confirmatory g is superior than the smallest detectable effect size of the exploratory at 80% power
+## Test if the confirmatory g is superior than the smallest detectable effect size of the confirmatory ss at 80% power
 
 # compute the SDE first
 simulation_results[, sde := mapply(function(n) {
@@ -412,9 +413,6 @@ simulation_results[, sde := mapply(function(n) {
 
 # Apply Hedges' correction to SDE
 simulation_results[, sde_g := sde * (1 - (3 / (4 * (2 * confirmatory_ss) - 9)))]
-
-# Standard error for SDE effect size (equal group sizes)
-simulation_results[, se_sde := sqrt((2 * confirmatory_ss)/(confirmatory_ss^2) + (sde_g^2 / (4 * confirmatory_ss)))]
 
 # Check if confirmatory ES exceeds SDE threshold
 simulation_results[, sde_confirmed := direction_consistent & 
@@ -429,12 +427,16 @@ simulation_results[, sde_confirmed := direction_consistent &
 # Test whether the effect size of the confirmatory is above a pre-specified (i.e. clinically meaningful) threshold
 
 # criteria 1: the SESOI has to fall in the CI of the confirmatory g
-# simulation_results[, sesoi_in_ci := (SESOI_g >= confirmatory_ci_lower & SESOI_g <= confirmatory_ci_upper) |
+# simulation_results[, sesoi_in_ci := direction_consistent & (SESOI_g >= confirmatory_ci_lower & SESOI_g <= confirmatory_ci_upper) |
 #                      (-SESOI_g >= confirmatory_ci_lower & -SESOI_g <= confirmatory_ci_upper)]
 
 # criteria 2: the confirmatory CI has to be above the the SESOI
-simulation_results[, ci_above_sesoi := confirmatory_ci_lower >= SESOI_g | confirmatory_ci_upper <= -SESOI_g]
-
+simulation_results[, ci_above_sesoi :=
+                     direction_consistent & (
+                       (exploratory_observed_g > 0 & confirmatory_ci_lower >= SESOI_g) |
+                         (exploratory_observed_g < 0 & confirmatory_ci_upper <= -SESOI_g)
+                     )
+]
 
 
 # Simulation results ------------------------------------------------------
@@ -502,8 +504,8 @@ combined_heatmap <- ggplot(plot_data, aes(x = g_shrinkage, y = Criterion_clean, 
   facet_wrap(~ expl_effect_size_class, ncol = 3) +
   labs(
     title = "Replication Success Rate by Effect Size Class",
-    x = "Replication Criterion",
-    y = "Effect size shrinkage"
+    x = "Effect size shrinkage",
+    y = "Replication Criterion"
   ) +
   theme_minimal(base_size = 16) +
   theme(
@@ -516,7 +518,7 @@ print(combined_heatmap)
 
 # Save the heatmap for the pre-sepcified exploratory sample size
 heatmap_name <- paste0("combined_heatmap_success_rate_all_classes_expn", exp_ss_heatmap, ".png")
-ggsave(file.path(save_path, heatmap_name), 
+ggsave(file.path(save_dir, heatmap_name), 
        combined_heatmap, width = 12, height = 8, dpi = 150)
 
 #### Type I error ####
@@ -543,12 +545,11 @@ pr_pooled_data <- fpr_plot_data %>%
 
 fpr_plot_pooled_n <- ggplot(pr_pooled_data, aes(x = mean_FPR, y = Criterion)) +
   geom_col(alpha = 0.8, width = 0.7) +
-  scale_fill_brewer(type = "qual", palette = "Set1") +
   labs(
     title = "False Positive Rate by Replication Criterion",
     subtitle = "Averaged across exploratory sample sizes (99% shrinkage scenarios)",
-    x = "Replication Criterion",
-    y = "False Positive Rate",
+    x = "False Positive Rate",
+    y = "Replication Criterion",
     fill = NULL
   ) +
   theme_minimal(base_size = 24) +
@@ -598,7 +599,7 @@ fpr_heatmap <- ggplot(fpr_heatmap_data, aes(x = Criterion, y = factor(explorator
 print(fpr_heatmap)
 
 # Save FPR heatmap
-ggsave(file.path(save_path, "fpr_heatmap_by_class.png"), fpr_heatmap, 
+ggsave(file.path(save_dir, "fpr_heatmap_by_class.png"), fpr_heatmap, 
        width = 12, height = 8, dpi = 300)
 
 
@@ -671,7 +672,7 @@ sensitivity_plot <- ggplot(shrinkage_sensitivity,
 
 print(sensitivity_plot)
 
-ggsave(file.path(save_path, "shrinkage_sensitivity.png"), sensitivity_plot, 
+ggsave(file.path(save_dir, "shrinkage_sensitivity.png"), sensitivity_plot, 
        width = 12, height = 8, dpi = 300)
 
 
@@ -810,7 +811,7 @@ f1_plot <- ggplot(overall_pr, aes(x = reorder(criterion_clean, mean_f1), y = mea
 
 print(f1_plot)
 
-ggsave(file.path(save_path, "f1_score_comparison.png"), f1_plot, 
+ggsave(file.path(save_dir, "f1_score_comparison.png"), f1_plot, 
        width = 10, height = 8, dpi = 300)
 
 # Precision vs Recall scatter plot
@@ -833,7 +834,7 @@ pr_scatter <- ggplot(overall_pr, aes(x = mean_recall, y = mean_precision)) +
 
 print(pr_scatter)
 
-ggsave(file.path(save_path, "precision_recall_scatter.png"), pr_scatter, 
+ggsave(file.path(save_dir, "precision_recall_scatter.png"), pr_scatter, 
        width = 10, height = 8, dpi = 300)
 
 
