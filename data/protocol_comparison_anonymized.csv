@@ -1,0 +1,573 @@
+validity;aspect;detail;phase;score;max_score;project_letter
+IV;Randomization;Group allocation;Exploratory Stage;1;1;A
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;A
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;A
+IV;Randomization;Intervention giving;Confirmatory Stage;1;1;A
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;A
+IV;Randomization;Data analysis scoring;Confirmatory Stage;0;1;A
+IV;Randomization;Randomization method;Exploratory Stage;1;2;A
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;A
+IV;Blinding;Group allocation;Exploratory Stage;0;1;A
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;A
+IV;Blinding;Intervention giving;Exploratory Stage;1;1;A
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;A
+IV;Blinding;Outcome assessment;Exploratory Stage;1;1;A
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;A
+IV;Blinding;Data analysis;Exploratory Stage;1;1;A
+IV;Blinding;Data analysis;Confirmatory Stage;1;1;A
+IV;Controls;Negative control;Exploratory Stage;1;1;A
+IV;Controls;Negative control;Confirmatory Stage;1;1;A
+IV;Controls;Positive control;Exploratory Stage;0;1;A
+IV;Controls;Positive control;Confirmatory Stage;0;1;A
+IV;Controls;Comparator;Exploratory Stage;0;1;A
+IV;Controls;Comparator;Confirmatory Stage;0;1;A
+IV;Controls;Sham mock naive;Exploratory Stage;0.5;1;A
+IV;Controls;Sham mock naive;Confirmatory Stage;0.5;1;A
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;A
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;A
+IV;Population;Exclusion criteria;Exploratory Stage;0;1;A
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;A
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;A
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;A
+EV;Population;Age;Exploratory Stage;1;2;A
+EV;Population;Age;Confirmatory Stage;1;2;A
+EV;Population;Sex;Exploratory Stage;1;2;A
+EV;Population;Sex;Confirmatory Stage;2;2;A
+EV;Population;Health status;Exploratory Stage;1;2;A
+EV;Population;Health status;Confirmatory Stage;1;2;A
+SV;Statistics;Power calculation;Exploratory Stage;0;1;A
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;A
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;A
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;A
+SV;Statistics;Statistical advice;Exploratory Stage;0;1;A
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;A
+TV;Model;Species;Exploratory Stage;1;2;A
+TV;Model;Species;Confirmatory Stage;1;2;A
+TV;Model;Strain;Exploratory Stage;1;2;A
+TV;Model;Strain;Confirmatory Stage;1;2;A
+TV;Disease;Disease simulation;Exploratory Stage;1;2;A
+TV;Disease;Disease simulation;Confirmatory Stage;1;2;A
+TV;Disease;Outcome readout;Exploratory Stage;0;1;A
+TV;Disease;Outcome readout;Confirmatory Stage;0;1;A
+TV;Intervention;Scheme;Exploratory Stage;1;1;A
+TV;Intervention;Scheme;Confirmatory Stage;1;1;A
+IV;Randomization;Group allocation;Exploratory Stage;1;1;H
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;H
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;H
+IV;Randomization;Intervention giving;Confirmatory Stage;0;1;H
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;H
+IV;Randomization;Data analysis scoring;Confirmatory Stage;0;1;H
+IV;Randomization;Randomization method;Exploratory Stage;2;2;H
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;H
+IV;Blinding;Group allocation;Exploratory Stage;1;1;H
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;H
+IV;Blinding;Intervention giving;Exploratory Stage;1;1;H
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;H
+IV;Blinding;Outcome assessment;Exploratory Stage;1;1;H
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;H
+IV;Blinding;Data analysis;Exploratory Stage;0;1;H
+IV;Blinding;Data analysis;Confirmatory Stage;1;1;H
+IV;Controls;Negative control;Exploratory Stage;1;1;H
+IV;Controls;Negative control;Confirmatory Stage;1;1;H
+IV;Controls;Positive control;Exploratory Stage;1;1;H
+IV;Controls;Positive control;Confirmatory Stage;1;1;H
+IV;Controls;Comparator;Exploratory Stage;0;1;H
+IV;Controls;Comparator;Confirmatory Stage;0;1;H
+IV;Controls;Sham mock naive;Exploratory Stage;0;1;H
+IV;Controls;Sham mock naive;Confirmatory Stage;0;1;H
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;H
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;H
+IV;Population;Exclusion criteria;Exploratory Stage;1;1;H
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;H
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;H
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;H
+EV;Population;Age;Exploratory Stage;1;2;H
+EV;Population;Age;Confirmatory Stage;1;2;H
+EV;Population;Sex;Exploratory Stage;1;2;H
+EV;Population;Sex;Confirmatory Stage;1;2;H
+EV;Population;Health status;Exploratory Stage;1;2;H
+EV;Population;Health status;Confirmatory Stage;1;2;H
+SV;Statistics;Power calculation;Exploratory Stage;0;1;H
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;H
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;H
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;H
+SV;Statistics;Statistical advice;Exploratory Stage;0;1;H
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;H
+TV;Model;Species;Exploratory Stage;1;2;H
+TV;Model;Species;Confirmatory Stage;1;2;H
+TV;Model;Strain;Exploratory Stage;1;2;H
+TV;Model;Strain;Confirmatory Stage;1;2;H
+TV;Disease;Disease simulation;Exploratory Stage;1;2;H
+TV;Disease;Disease simulation;Confirmatory Stage;1;2;H
+TV;Disease;Outcome readout;Exploratory Stage;0;1;H
+TV;Disease;Outcome readout;Confirmatory Stage;0;1;H
+TV;Intervention;Scheme;Exploratory Stage;1;1;H
+TV;Intervention;Scheme;Confirmatory Stage;1;1;H
+IV;Randomization;Group allocation;Exploratory Stage;1;1;G
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;G
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;G
+IV;Randomization;Intervention giving;Confirmatory Stage;0;1;G
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;G
+IV;Randomization;Data analysis scoring;Confirmatory Stage;0;1;G
+IV;Randomization;Randomization method;Exploratory Stage;2;2;G
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;G
+IV;Blinding;Group allocation;Exploratory Stage;1;1;G
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;G
+IV;Blinding;Intervention giving;Exploratory Stage;1;1;G
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;G
+IV;Blinding;Outcome assessment;Exploratory Stage;1;1;G
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;G
+IV;Blinding;Data analysis;Exploratory Stage;0;1;G
+IV;Blinding;Data analysis;Confirmatory Stage;0;1;G
+IV;Controls;Negative control;Exploratory Stage;1;1;G
+IV;Controls;Negative control;Confirmatory Stage;1;1;G
+IV;Controls;Positive control;Exploratory Stage;0;1;G
+IV;Controls;Positive control;Confirmatory Stage;0;1;G
+IV;Controls;Comparator;Exploratory Stage;1;1;G
+IV;Controls;Comparator;Confirmatory Stage;1;1;G
+IV;Controls;Sham mock naive;Exploratory Stage;0;1;G
+IV;Controls;Sham mock naive;Confirmatory Stage;0;1;G
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;G
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;G
+IV;Population;Exclusion criteria;Exploratory Stage;0;1;G
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;G
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;G
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;G
+EV;Population;Age;Exploratory Stage;1;2;G
+EV;Population;Age;Confirmatory Stage;1;2;G
+EV;Population;Sex;Exploratory Stage;1;2;G
+EV;Population;Sex;Confirmatory Stage;2;2;G
+EV;Population;Health status;Exploratory Stage;1;2;G
+EV;Population;Health status;Confirmatory Stage;1;2;G
+SV;Statistics;Power calculation;Exploratory Stage;0;1;G
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;G
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;G
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;G
+SV;Statistics;Statistical advice;Exploratory Stage;1;1;G
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;G
+TV;Model;Species;Exploratory Stage;1;2;G
+TV;Model;Species;Confirmatory Stage;1;2;G
+TV;Model;Strain;Exploratory Stage;1;2;G
+TV;Model;Strain;Confirmatory Stage;2;2;G
+TV;Disease;Disease simulation;Exploratory Stage;1;2;G
+TV;Disease;Disease simulation;Confirmatory Stage;1;2;G
+TV;Disease;Outcome readout;Exploratory Stage;0;1;G
+TV;Disease;Outcome readout;Confirmatory Stage;0;1;G
+TV;Intervention;Scheme;Exploratory Stage;1;1;G
+TV;Intervention;Scheme;Confirmatory Stage;1;1;G
+IV;Randomization;Group allocation;Exploratory Stage;0;1;J
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;J
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;J
+IV;Randomization;Intervention giving;Confirmatory Stage;1;1;J
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;J
+IV;Randomization;Data analysis scoring;Confirmatory Stage;1;1;J
+IV;Randomization;Randomization method;Exploratory Stage;0;2;J
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;J
+IV;Blinding;Group allocation;Exploratory Stage;0;1;J
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;J
+IV;Blinding;Intervention giving;Exploratory Stage;0;1;J
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;J
+IV;Blinding;Outcome assessment;Exploratory Stage;0;1;J
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;J
+IV;Blinding;Data analysis;Exploratory Stage;0;1;J
+IV;Blinding;Data analysis;Confirmatory Stage;1;1;J
+IV;Controls;Negative control;Exploratory Stage;1;1;J
+IV;Controls;Negative control;Confirmatory Stage;1;1;J
+IV;Controls;Positive control;Exploratory Stage;0;1;J
+IV;Controls;Positive control;Confirmatory Stage;0;1;J
+IV;Controls;Comparator;Exploratory Stage;0;1;J
+IV;Controls;Comparator;Confirmatory Stage;0;1;J
+IV;Controls;Sham mock naive;Exploratory Stage;0;1;J
+IV;Controls;Sham mock naive;Confirmatory Stage;0;1;J
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;J
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;J
+IV;Population;Exclusion criteria;Exploratory Stage;0;1;J
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;J
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;J
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;J
+EV;Population;Age;Exploratory Stage;1;2;J
+EV;Population;Age;Confirmatory Stage;1;2;J
+EV;Population;Sex;Exploratory Stage;1;2;J
+EV;Population;Sex;Confirmatory Stage;2;2;J
+EV;Population;Health status;Exploratory Stage;1;2;J
+EV;Population;Health status;Confirmatory Stage;1;2;J
+SV;Statistics;Power calculation;Exploratory Stage;0;1;J
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;J
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;J
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;J
+SV;Statistics;Statistical advice;Exploratory Stage;0;1;J
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;J
+TV;Model;Species;Exploratory Stage;1;2;J
+TV;Model;Species;Confirmatory Stage;1;2;J
+TV;Model;Strain;Exploratory Stage;1;2;J
+TV;Model;Strain;Confirmatory Stage;1;2;J
+TV;Disease;Disease simulation;Exploratory Stage;2;2;J
+TV;Disease;Disease simulation;Confirmatory Stage;2;2;J
+TV;Disease;Outcome readout;Exploratory Stage;1;1;J
+TV;Disease;Outcome readout;Confirmatory Stage;1;1;J
+TV;Intervention;Scheme;Exploratory Stage;1;1;J
+TV;Intervention;Scheme;Confirmatory Stage;1;1;J
+IV;Randomization;Group allocation;Exploratory Stage;1;1;B
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;B
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;B
+IV;Randomization;Intervention giving;Confirmatory Stage;1;1;B
+IV;Randomization;Data analysis scoring;Exploratory Stage;1;1;B
+IV;Randomization;Data analysis scoring;Confirmatory Stage;1;1;B
+IV;Randomization;Randomization method;Exploratory Stage;1;2;B
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;B
+IV;Blinding;Group allocation;Exploratory Stage;0;1;B
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;B
+IV;Blinding;Intervention giving;Exploratory Stage;0;1;B
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;B
+IV;Blinding;Outcome assessment;Exploratory Stage;1;1;B
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;B
+IV;Blinding;Data analysis;Exploratory Stage;1;1;B
+IV;Blinding;Data analysis;Confirmatory Stage;1;1;B
+IV;Controls;Negative control;Exploratory Stage;1;1;B
+IV;Controls;Negative control;Confirmatory Stage;1;1;B
+IV;Controls;Positive control;Exploratory Stage;0;1;B
+IV;Controls;Positive control;Confirmatory Stage;0;1;B
+IV;Controls;Comparator;Exploratory Stage;0;1;B
+IV;Controls;Comparator;Confirmatory Stage;1;1;B
+IV;Controls;Sham mock naive;Exploratory Stage;1;1;B
+IV;Controls;Sham mock naive;Confirmatory Stage;1;1;B
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;B
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;B
+IV;Population;Exclusion criteria;Exploratory Stage;1;1;B
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;B
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;B
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;B
+EV;Population;Age;Exploratory Stage;1;2;B
+EV;Population;Age;Confirmatory Stage;1;2;B
+EV;Population;Sex;Exploratory Stage;1;2;B
+EV;Population;Sex;Confirmatory Stage;2;2;B
+EV;Population;Health status;Exploratory Stage;1;2;B
+EV;Population;Health status;Confirmatory Stage;1;2;B
+SV;Statistics;Power calculation;Exploratory Stage;1;1;B
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;B
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;B
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;B
+SV;Statistics;Statistical advice;Exploratory Stage;1;1;B
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;B
+TV;Model;Species;Exploratory Stage;1;2;B
+TV;Model;Species;Confirmatory Stage;1;2;B
+TV;Model;Strain;Exploratory Stage;1;2;B
+TV;Model;Strain;Confirmatory Stage;1;2;B
+TV;Disease;Disease simulation;Exploratory Stage;1;2;B
+TV;Disease;Disease simulation;Confirmatory Stage;1;2;B
+TV;Disease;Outcome readout;Exploratory Stage;1;1;B
+TV;Disease;Outcome readout;Confirmatory Stage;1;1;B
+TV;Intervention;Scheme;Exploratory Stage;0;1;B
+TV;Intervention;Scheme;Confirmatory Stage;1;1;B
+IV;Randomization;Group allocation;Exploratory Stage;0;1;C
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;C
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;C
+IV;Randomization;Intervention giving;Confirmatory Stage;0;1;C
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;C
+IV;Randomization;Data analysis scoring;Confirmatory Stage;0;1;C
+IV;Randomization;Randomization method;Exploratory Stage;0;2;C
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;C
+IV;Blinding;Group allocation;Exploratory Stage;0;1;C
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;C
+IV;Blinding;Intervention giving;Exploratory Stage;0;1;C
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;C
+IV;Blinding;Outcome assessment;Exploratory Stage;0;1;C
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;C
+IV;Blinding;Data analysis;Exploratory Stage;0;1;C
+IV;Blinding;Data analysis;Confirmatory Stage;1;1;C
+IV;Controls;Negative control;Exploratory Stage;1;1;C
+IV;Controls;Negative control;Confirmatory Stage;1;1;C
+IV;Controls;Positive control;Exploratory Stage;0.5;1;C
+IV;Controls;Positive control;Confirmatory Stage;0.5;1;C
+IV;Controls;Comparator;Exploratory Stage;0;1;C
+IV;Controls;Comparator;Confirmatory Stage;0.5;1;C
+IV;Controls;Sham mock naive;Exploratory Stage;1;1;C
+IV;Controls;Sham mock naive;Confirmatory Stage;1;1;C
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;C
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;C
+IV;Population;Exclusion criteria;Exploratory Stage;1;1;C
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;C
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;C
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;C
+EV;Population;Age;Exploratory Stage;1;2;C
+EV;Population;Age;Confirmatory Stage;2;2;C
+EV;Population;Sex;Exploratory Stage;2;2;C
+EV;Population;Sex;Confirmatory Stage;2;2;C
+EV;Population;Health status;Exploratory Stage;2;2;C
+EV;Population;Health status;Confirmatory Stage;2;2;C
+SV;Statistics;Power calculation;Exploratory Stage;0;1;C
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;C
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;C
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;C
+SV;Statistics;Statistical advice;Exploratory Stage;0;1;C
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;C
+TV;Model;Species;Exploratory Stage;1;2;C
+TV;Model;Species;Confirmatory Stage;1;2;C
+TV;Model;Strain;Exploratory Stage;1;2;C
+TV;Model;Strain;Confirmatory Stage;1;2;C
+TV;Disease;Disease simulation;Exploratory Stage;1;2;C
+TV;Disease;Disease simulation;Confirmatory Stage;2;2;C
+TV;Disease;Outcome readout;Exploratory Stage;1;1;C
+TV;Disease;Outcome readout;Confirmatory Stage;1;1;C
+TV;Intervention;Scheme;Exploratory Stage;1;1;C
+TV;Intervention;Scheme;Confirmatory Stage;1;1;C
+IV;Randomization;Group allocation;Exploratory Stage;1;1;D
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;D
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;D
+IV;Randomization;Intervention giving;Confirmatory Stage;0;1;D
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;D
+IV;Randomization;Data analysis scoring;Confirmatory Stage;0;1;D
+IV;Randomization;Randomization method;Exploratory Stage;2;2;D
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;D
+IV;Blinding;Group allocation;Exploratory Stage;1;1;D
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;D
+IV;Blinding;Intervention giving;Exploratory Stage;1;1;D
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;D
+IV;Blinding;Outcome assessment;Exploratory Stage;1;1;D
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;D
+IV;Blinding;Data analysis;Exploratory Stage;1;1;D
+IV;Blinding;Data analysis;Confirmatory Stage;1;1;D
+IV;Controls;Negative control;Exploratory Stage;1;1;D
+IV;Controls;Negative control;Confirmatory Stage;1;1;D
+IV;Controls;Positive control;Exploratory Stage;1;1;D
+IV;Controls;Positive control;Confirmatory Stage;1;1;D
+IV;Controls;Comparator;Exploratory Stage;0;1;D
+IV;Controls;Comparator;Confirmatory Stage;0;1;D
+IV;Controls;Sham mock naive;Exploratory Stage;0;1;D
+IV;Controls;Sham mock naive;Confirmatory Stage;0;1;D
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;D
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;D
+IV;Population;Exclusion criteria;Exploratory Stage;0;1;D
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;D
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;D
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;D
+EV;Population;Age;Exploratory Stage;1;2;D
+EV;Population;Age;Confirmatory Stage;2;2;D
+EV;Population;Sex;Exploratory Stage;1;2;D
+EV;Population;Sex;Confirmatory Stage;2;2;D
+EV;Population;Health status;Exploratory Stage;1;2;D
+EV;Population;Health status;Confirmatory Stage;2;2;D
+SV;Statistics;Power calculation;Exploratory Stage;1;1;D
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;D
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;D
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;D
+SV;Statistics;Statistical advice;Exploratory Stage;1;1;D
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;D
+TV;Model;Species;Exploratory Stage;1;2;D
+TV;Model;Species;Confirmatory Stage;1;2;D
+TV;Model;Strain;Exploratory Stage;1;2;D
+TV;Model;Strain;Confirmatory Stage;2;2;D
+TV;Disease;Disease simulation;Exploratory Stage;0;2;D
+TV;Disease;Disease simulation;Confirmatory Stage;1;2;D
+TV;Disease;Outcome readout;Exploratory Stage;1;1;D
+TV;Disease;Outcome readout;Confirmatory Stage;1;1;D
+TV;Intervention;Scheme;Exploratory Stage;0;1;D
+TV;Intervention;Scheme;Confirmatory Stage;1;1;D
+IV;Randomization;Group allocation;Exploratory Stage;0;1;I
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;I
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;I
+IV;Randomization;Intervention giving;Confirmatory Stage;1;1;I
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;I
+IV;Randomization;Data analysis scoring;Confirmatory Stage;1;1;I
+IV;Randomization;Randomization method;Exploratory Stage;0;2;I
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;I
+IV;Blinding;Group allocation;Exploratory Stage;0;1;I
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;I
+IV;Blinding;Intervention giving;Exploratory Stage;0;1;I
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;I
+IV;Blinding;Outcome assessment;Exploratory Stage;0;1;I
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;I
+IV;Blinding;Data analysis;Exploratory Stage;0;1;I
+IV;Blinding;Data analysis;Confirmatory Stage;1;1;I
+IV;Controls;Negative control;Exploratory Stage;1;1;I
+IV;Controls;Negative control;Confirmatory Stage;1;1;I
+IV;Controls;Positive control;Exploratory Stage;0;1;I
+IV;Controls;Positive control;Confirmatory Stage;0;1;I
+IV;Controls;Comparator;Exploratory Stage;0;1;I
+IV;Controls;Comparator;Confirmatory Stage;0;1;I
+IV;Controls;Sham mock naive;Exploratory Stage;0;1;I
+IV;Controls;Sham mock naive;Confirmatory Stage;0;1;I
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;I
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;I
+IV;Population;Exclusion criteria;Exploratory Stage;1;1;I
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;I
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;I
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;I
+EV;Population;Age;Exploratory Stage;1;2;I
+EV;Population;Age;Confirmatory Stage;2;2;I
+EV;Population;Sex;Exploratory Stage;1;2;I
+EV;Population;Sex;Confirmatory Stage;1;2;I
+EV;Population;Health status;Exploratory Stage;1;2;I
+EV;Population;Health status;Confirmatory Stage;1;2;I
+SV;Statistics;Power calculation;Exploratory Stage;0;1;I
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;I
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;I
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;I
+SV;Statistics;Statistical advice;Exploratory Stage;1;1;I
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;I
+TV;Model;Species;Exploratory Stage;1;2;I
+TV;Model;Species;Confirmatory Stage;1;2;I
+TV;Model;Strain;Exploratory Stage;1;2;I
+TV;Model;Strain;Confirmatory Stage;1;2;I
+TV;Disease;Disease simulation;Exploratory Stage;2;2;I
+TV;Disease;Disease simulation;Confirmatory Stage;2;2;I
+TV;Disease;Outcome readout;Exploratory Stage;0;1;I
+TV;Disease;Outcome readout;Confirmatory Stage;0;1;I
+TV;Intervention;Scheme;Exploratory Stage;1;1;I
+TV;Intervention;Scheme;Confirmatory Stage;1;1;I
+IV;Randomization;Group allocation;Exploratory Stage;1;1;E
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;E
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;E
+IV;Randomization;Intervention giving;Confirmatory Stage;1;1;E
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;E
+IV;Randomization;Data analysis scoring;Confirmatory Stage;0;1;E
+IV;Randomization;Randomization method;Exploratory Stage;1;2;E
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;E
+IV;Blinding;Group allocation;Exploratory Stage;0;1;E
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;E
+IV;Blinding;Intervention giving;Exploratory Stage;0;1;E
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;E
+IV;Blinding;Outcome assessment;Exploratory Stage;0;1;E
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;E
+IV;Blinding;Data analysis;Exploratory Stage;0;1;E
+IV;Blinding;Data analysis;Confirmatory Stage;1;1;E
+IV;Controls;Negative control;Exploratory Stage;0.5;1;E
+IV;Controls;Negative control;Confirmatory Stage;1;1;E
+IV;Controls;Positive control;Exploratory Stage;0;1;E
+IV;Controls;Positive control;Confirmatory Stage;0;1;E
+IV;Controls;Comparator;Exploratory Stage;0.5;1;E
+IV;Controls;Comparator;Confirmatory Stage;1;1;E
+IV;Controls;Sham mock naive;Exploratory Stage;1;1;E
+IV;Controls;Sham mock naive;Confirmatory Stage;0.5;1;E
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;E
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;E
+IV;Population;Exclusion criteria;Exploratory Stage;1;1;E
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;E
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;E
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;E
+EV;Population;Age;Exploratory Stage;1;2;E
+EV;Population;Age;Confirmatory Stage;2;2;E
+EV;Population;Sex;Exploratory Stage;2;2;E
+EV;Population;Sex;Confirmatory Stage;2;2;E
+EV;Population;Health status;Exploratory Stage;1;2;E
+EV;Population;Health status;Confirmatory Stage;1;2;E
+SV;Statistics;Power calculation;Exploratory Stage;1;1;E
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;E
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;E
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;E
+SV;Statistics;Statistical advice;Exploratory Stage;1;1;E
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;E
+TV;Model;Species;Exploratory Stage;2;2;E
+TV;Model;Species;Confirmatory Stage;2;2;E
+TV;Model;Strain;Exploratory Stage;1;2;E
+TV;Model;Strain;Confirmatory Stage;1;2;E
+TV;Disease;Disease simulation;Exploratory Stage;2;2;E
+TV;Disease;Disease simulation;Confirmatory Stage;2;2;E
+TV;Disease;Outcome readout;Exploratory Stage;1;1;E
+TV;Disease;Outcome readout;Confirmatory Stage;1;1;E
+TV;Intervention;Scheme;Exploratory Stage;1;1;E
+TV;Intervention;Scheme;Confirmatory Stage;1;1;E
+IV;Randomization;Group allocation;Exploratory Stage;0;1;K
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;K
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;K
+IV;Randomization;Intervention giving;Confirmatory Stage;0;1;K
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;K
+IV;Randomization;Data analysis scoring;Confirmatory Stage;0;1;K
+IV;Randomization;Randomization method;Exploratory Stage;0;2;K
+IV;Randomization;Randomization method;Confirmatory Stage;2;2;K
+IV;Blinding;Group allocation;Exploratory Stage;0;1;K
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;K
+IV;Blinding;Intervention giving;Exploratory Stage;0;1;K
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;K
+IV;Blinding;Outcome assessment;Exploratory Stage;0;1;K
+IV;Blinding;Outcome assessment;Confirmatory Stage;1;1;K
+IV;Blinding;Data analysis;Exploratory Stage;0;1;K
+IV;Blinding;Data analysis;Confirmatory Stage;1;1;K
+IV;Controls;Negative control;Exploratory Stage;1;1;K
+IV;Controls;Negative control;Confirmatory Stage;1;1;K
+IV;Controls;Positive control;Exploratory Stage;0;1;K
+IV;Controls;Positive control;Confirmatory Stage;0;1;K
+IV;Controls;Comparator;Exploratory Stage;0;1;K
+IV;Controls;Comparator;Confirmatory Stage;0;1;K
+IV;Controls;Sham mock naive;Exploratory Stage;0;1;K
+IV;Controls;Sham mock naive;Confirmatory Stage;1;1;K
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;K
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;K
+IV;Population;Exclusion criteria;Exploratory Stage;1;1;K
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;K
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;K
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;0;1;K
+EV;Population;Age;Exploratory Stage;1;2;K
+EV;Population;Age;Confirmatory Stage;1;2;K
+EV;Population;Sex;Exploratory Stage;1;2;K
+EV;Population;Sex;Confirmatory Stage;2;2;K
+EV;Population;Health status;Exploratory Stage;1;2;K
+EV;Population;Health status;Confirmatory Stage;1;2;K
+SV;Statistics;Power calculation;Exploratory Stage;0;1;K
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;K
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;K
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;K
+SV;Statistics;Statistical advice;Exploratory Stage;0;1;K
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;K
+TV;Model;Species;Exploratory Stage;1;2;K
+TV;Model;Species;Confirmatory Stage;1;2;K
+TV;Model;Strain;Exploratory Stage;1;2;K
+TV;Model;Strain;Confirmatory Stage;1;2;K
+TV;Disease;Disease simulation;Exploratory Stage;1;2;K
+TV;Disease;Disease simulation;Confirmatory Stage;1;2;K
+TV;Disease;Outcome readout;Exploratory Stage;1;1;K
+TV;Disease;Outcome readout;Confirmatory Stage;1;1;K
+TV;Intervention;Scheme;Exploratory Stage;1;1;K
+TV;Intervention;Scheme;Confirmatory Stage;1;1;K
+IV;Randomization;Group allocation;Exploratory Stage;1;1;F
+IV;Randomization;Group allocation;Confirmatory Stage;1;1;F
+IV;Randomization;Intervention giving;Exploratory Stage;0;1;F
+IV;Randomization;Intervention giving;Confirmatory Stage;1;1;F
+IV;Randomization;Data analysis scoring;Exploratory Stage;0;1;F
+IV;Randomization;Data analysis scoring;Confirmatory Stage;0;1;F
+IV;Randomization;Randomization method;Exploratory Stage;0;2;F
+IV;Randomization;Randomization method;Confirmatory Stage;0;2;F
+IV;Blinding;Group allocation;Exploratory Stage;0;1;F
+IV;Blinding;Group allocation;Confirmatory Stage;1;1;F
+IV;Blinding;Intervention giving;Exploratory Stage;0;1;F
+IV;Blinding;Intervention giving;Confirmatory Stage;1;1;F
+IV;Blinding;Outcome assessment;Exploratory Stage;0;1;F
+IV;Blinding;Outcome assessment;Confirmatory Stage;0;1;F
+IV;Blinding;Data analysis;Exploratory Stage;0;1;F
+IV;Blinding;Data analysis;Confirmatory Stage;0;1;F
+IV;Controls;Negative control;Exploratory Stage;1;1;F
+IV;Controls;Negative control;Confirmatory Stage;1;1;F
+IV;Controls;Positive control;Exploratory Stage;1;1;F
+IV;Controls;Positive control;Confirmatory Stage;1;1;F
+IV;Controls;Comparator;Exploratory Stage;0;1;F
+IV;Controls;Comparator;Confirmatory Stage;1;1;F
+IV;Controls;Sham mock naive;Exploratory Stage;1;1;F
+IV;Controls;Sham mock naive;Confirmatory Stage;0;1;F
+IV;Population;Inclusion criteria;Exploratory Stage;1;1;F
+IV;Population;Inclusion criteria;Confirmatory Stage;1;1;F
+IV;Population;Exclusion criteria;Exploratory Stage;1;1;F
+IV;Population;Exclusion criteria;Confirmatory Stage;1;1;F
+EV;Multi-Lab;Multi lab approach;Exploratory Stage;0;1;F
+EV;Multi-Lab;Multi lab approach;Confirmatory Stage;1;1;F
+EV;Population;Age;Exploratory Stage;1;2;F
+EV;Population;Age;Confirmatory Stage;1;2;F
+EV;Population;Sex;Exploratory Stage;1;2;F
+EV;Population;Sex;Confirmatory Stage;1;2;F
+EV;Population;Health status;Exploratory Stage;1;2;F
+EV;Population;Health status;Confirmatory Stage;1;2;F
+SV;Statistics;Power calculation;Exploratory Stage;0;1;F
+SV;Statistics;Power calculation;Confirmatory Stage;1;1;F
+SV;Statistics;Outcome a priori;Exploratory Stage;1;1;F
+SV;Statistics;Outcome a priori;Confirmatory Stage;1;1;F
+SV;Statistics;Statistical advice;Exploratory Stage;0;1;F
+SV;Statistics;Statistical advice;Confirmatory Stage;1;1;F
+TV;Model;Species;Exploratory Stage;1;2;F
+TV;Model;Species;Confirmatory Stage;1;2;F
+TV;Model;Strain;Exploratory Stage;1;2;F
+TV;Model;Strain;Confirmatory Stage;1;2;F
+TV;Disease;Disease simulation;Exploratory Stage;1;2;F
+TV;Disease;Disease simulation;Confirmatory Stage;1;2;F
+TV;Disease;Outcome readout;Exploratory Stage;1;1;F
+TV;Disease;Outcome readout;Confirmatory Stage;1;1;F
+TV;Intervention;Scheme;Exploratory Stage;1;1;F
+TV;Intervention;Scheme;Confirmatory Stage;1;1;F

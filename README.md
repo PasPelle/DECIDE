@@ -1,3 +1,25 @@
+## Reproducibility
+
+This project uses [`renv`](https://rstudio.github.io/renv/) to manage package versions.
+
+### Setup
+
+1. Clone the repository
+2. Open `DECIDE.Rproj` in RStudio
+3. Install exact package versions:
+```r
+   renv::restore()
+```
+4. Place data files in the `/data` folder (see Data Availability below)
+5. Run the full analysis pipeline:
+```r
+   source("main.R")
+```
+
+### R version
+R 4.5.x — see `renv.lock` for exact package versions.
+
+
 
 ####################
 #### SIMULATION ####

@@ -1,0 +1,7 @@
+library(here)
+source(here("packages.R"))
+source(here("all_functions.R"))
+source(here("confirmatory_replication_assessment.R"))
+source(here("confirmatory_vs_retrospective.R"))
+source(here("protocol_comparison.R"))
+source(here("simulation_replication_criteria.R"))
