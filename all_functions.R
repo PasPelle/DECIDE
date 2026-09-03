@@ -397,6 +397,25 @@ get_fitted_density <- function(zfit, z_seq) {
   data.table(z = z_seq, density = density_vals)
 }
 
+# Run the Shapley weighting formula on 8 coalition values
+compute_shapley <- function(v0, vc, vt, vs, vct, vcs, vts, vcts) {
+  phi_ctrl <- (2/6) * (vc - v0) +
+    (1/6) * (vct - vt) +
+    (1/6) * (vcs - vs) +
+    (2/6) * (vcts - vts)
+  
+  phi_treated <- (2/6) * (vt - v0) +
+    (1/6) * (vct - vc) +
+    (1/6) * (vts - vs) +
+    (2/6) * (vcts - vcs)
+  
+  phi_sd <- (2/6) * (vs - v0) +
+    (1/6) * (vcs - vc) +
+    (1/6) * (vts - vt) +
+    (2/6) * (vcts - vct)
+  
+  list(phi_ctrl = -phi_ctrl, phi_treated = -phi_treated, phi_sd = -phi_sd)
+}
 # Functions for study simulation ------------------------------------------
 
 

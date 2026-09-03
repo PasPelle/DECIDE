@@ -1,6 +1,9 @@
 # Run restore() before loading if using this repo for the first time
 # See README for setup instructions (renv::restore())
 
+library(modelsummary)
+library(flextable)
+library(tidyverse)
 library(here)
 library(data.table)
 library(readxl)
@@ -42,3 +45,6 @@ library(forcats)
 library(ComplexHeatmap)
 library(circlize)
 library(tibble)
+library(cowplot)
+library(gridExtra)
+library(grid)

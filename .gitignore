@@ -5,8 +5,14 @@
 decide_anonymization.R
 data/SESOI_DECIDE.csv
 data/DECIDE_Protocol_Comparison_Details.csv
-data/DECIDE_IV-EV-RE-TV:scoring.csv
+data/DECIDE_IV-EV-RE-TV_scoring.csv
+data/MASTERSHEET_DECIDE_1.xlsx
+data/MASTERSHEET_DECIDE_anonymized.csv
+data/SESOI_DECIDE_anonymized.csv
 additional_checks.R
 deprecated.R
 figure_builder.R
 renv/
+DECIDE-internal/
+results/
+simulation_results/

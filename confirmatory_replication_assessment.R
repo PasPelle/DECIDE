@@ -1,4 +1,5 @@
 # INTRO: Analysis of the DECIDE confirmatory projects including effect size comparison, variance analysis, replication assessment with the replication flags function and effect size deconstruction
+library(here)
 source(here("packages.R"))
 
 # Import and pre-processing______________####
@@ -353,7 +354,7 @@ hedges_effects_by_project <- ggplot(all_stats_wide, aes(x = jittered_x, y = hedg
                                 "confirmatory" = "#00AFBB"),
                      labels = c(
                        "exploratory" = "Exploratory",
-                       "confirmatory" = "Multi-lab"
+                       "confirmatory" = "Confirmatory"
                      )
                      ) +
   scale_shape_manual(
@@ -363,30 +364,33 @@ hedges_effects_by_project <- ggplot(all_stats_wide, aes(x = jittered_x, y = hedg
     ),
     labels = c(
       "exploratory"  = "Exploratory",
-      "confirmatory" = "Multi-lab"
+      "confirmatory" = "Confirmatory"
     )
   ) +
   scale_x_continuous(
     breaks = unique(all_stats_wide$base_x),
     labels = unique(all_stats_wide$project_letter)
   ) +
+  scale_y_continuous(limits = c(-3, 6)) +
   labs(
-    x = "Confirmatory Studies",
+    x = "pCS",
     y = "Effect Size (Hedge's g)",
     color = "Stage",
     shape = "Stage"
   ) +
+  theme_prism() +
   theme(
     axis.text.x = element_text(hjust = 1),
     axis.text.y = element_text(hjust = 1),
     panel.grid.major.x = element_blank(), 
-    panel.grid.minor.x = element_blank()  
-  ) +
-  theme_prism()
+    panel.grid.minor.x = element_blank(),
+    legend.position = "bottom"
+  )
+
 
 hedges_effects_by_project
 
-saveRDS(hedges_effects_by_project, file.path(panels_dir, "hedges_effects_by_project.rds"))   # ADD THIS LINE
+saveRDS(hedges_effects_by_project, file.path(panels_dir, "hedges_effects_by_project.rds"))
 
 ggsave(
   filename = file.path(save_dir_decide, "hedges_effects_by_project.png"),
@@ -476,7 +480,7 @@ hedges_pooled_by_project <- ggplot(
     ),
     labels = c(
       "exploratory"  = "Exploratory",
-      "confirmatory" = "Multi-lab (pooled)"
+      "confirmatory" = "Confirmatory"
     )
   ) +
   scale_shape_manual(
@@ -486,15 +490,17 @@ hedges_pooled_by_project <- ggplot(
     ),
     labels = c(
       "exploratory"  = "Exploratory",
-      "confirmatory" = "Multi-lab (pooled)"
+      "confirmatory" = "Confirmatory"
     )
   ) +
   scale_x_continuous(
     breaks = 1:length(levels(meta_wide_plot$project_letter)),
     labels = levels(meta_wide_plot$project_letter)
+    # limits = c(0.5, 10.5)
   ) +
+  scale_y_continuous(breaks = seq(-4, 6, by = 2)) +
   labs(
-    x     = "Confirmatory Studies",
+    x     = "pCS",
     y     = "Effect Size (Hedges' g)",
     color = "Stage",
     shape = "Stage"
@@ -503,12 +509,13 @@ hedges_pooled_by_project <- ggplot(
   theme(
     axis.text.x        = element_text(hjust = 1),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank()
+    panel.grid.minor.x = element_blank(),
+    legend.position = "bottom"
   )
 
 hedges_pooled_by_project
 
-saveRDS(hedges_pooled_by_project, file.path(panels_dir, "hedges_pooled_by_project.rds"))   # ADD THIS LINE
+saveRDS(hedges_pooled_by_project, file.path(panels_dir, "hedges_pooled_by_project.rds"))
 
 ggsave(
   filename = file.path(save_dir_decide, "hedges_pooled_by_project.png"),
@@ -1423,7 +1430,7 @@ replication_matrix_decide <- meta_wide[, .(
   `Exploratory g in confirmatory CI` = ci_agreement,
   # `Exploratory g in confirmatory PI` = exploratory_within_confirmatory_PI,
   `Exploratory and confirmatory in the same direction` = direction_agreement,
-  `Skeptical p < 0.05` = sceptical_sig,
+  `Sceptical p < 0.05` = sceptical_sig,
   `Both p < 0.05 & Same Direction` = ttest_sig,
   `Small Telescopes` = small_telescope_confirmed,
   `Confirmatory larger than its SDE` = sde_confirmed,
@@ -1471,7 +1478,7 @@ heatmap_plot_decide <- ggplot(replication_long_decide, aes(x = project_letter, y
       "Confirmatory larger than its SDE" = "Confirmatory ES > mDES",
       "Small Telescopes" = "Small Telescopes",
       "Both p < 0.05 & Same Direction" = "Significant & Same Direction",
-      "Skeptical p < 0.05" = "Skeptical p-value",
+      "Sceptical p < 0.05" = "Sceptical p-value",
       "Exploratory and confirmatory in the same direction" = "Same Direction",
       # "Exploratory g in confirmatory PI" = "Exploratory ES within c-PI ",
       "Exploratory g in confirmatory CI" = "Exploratory ES within c-CI"
@@ -1719,25 +1726,32 @@ p5_distance_decide <- ggplot(
   geom_vline(xintercept = 1, linetype = "dashed", color = "gray60") +
   geom_point(size = 3) +
   scale_color_manual(
-    values = c("FALSE" = "#7B2D8B", "TRUE" = "pink2"),
-    labels = c("FALSE" = "Typical", "TRUE" = "Atypical (p < 0.05)")
+    values = c("FALSE" = "#333333", "TRUE" = "#B8B8B8"),
+    labels = c("FALSE" = "Typical Lab", "TRUE" = "Atypical Lab (p < 0.05)")
   ) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  facet_wrap(~ metric) +
-  labs(x = "Distance statistic (Dᵢ)", y = "Confirmatory Studies", title = NULL) +
+  scale_x_continuous(
+    limits = c(0, 2),         
+    breaks = seq(0, 2, by = 0.5)
+  ) +
+  # facet_wrap(~ metric) +
+  labs(x = "Distance Statistic (Dᵢ)", y = "pCS", title = NULL) +
   shrinkage_theme() +
   theme(
     # axis.text.y     = element_blank(),
     # axis.ticks.y    = element_blank(),
     # axis.line.y     = element_blank(),
-    strip.text = element_blank(),
+    # strip.text = element_blank(),
     legend.position = "bottom",
     legend.title    = element_blank(),
-    plot.title = element_blank()
+    plot.title = element_blank(),
+    axis.ticks.length = unit(2.75, "pt"), 
+    axis.title.x = element_text(margin = margin(t = 4))
   )
+
 p5_distance_decide
 
-saveRDS(p5_distance_decide, file.path(panels_dir, "p5_distance_decide.rds"))   # ADD
+saveRDS(p5_distance_decide, file.path(panels_dir, "p5_distance_decide.rds"))   
 
 ggsave(
   filename = file.path(save_dir_decide, "atypical_labs_p_decide.png"),
@@ -2026,9 +2040,9 @@ decomp_dt[, total_shrinkage := abs(g_exp) - abs(g_conf)]
 
 # Shared plot settings
 component_colors <- c(
-  "Control stability"  = "#E7B800",
-  "Treatment response" = "#00AFBB",
-  "Variance inflation" = "#CC3300"
+  "Control stability"  = "#8E7CC3",   
+  "Treatment response" = "#6FA287",
+  "Variance inflation" = "#B5563C"
 )
 
 project_ord <- rev(sort(unique(decomp_dt$project_letter)))
@@ -2372,8 +2386,30 @@ set(shapley_long, j = "component", value = factor(shapley_long$component,
 
 p_shapley <- ggplot(shapley_long, aes(x = phi, y = project_letter, fill = component)) +
   geom_col(position = "stack", width = 0.7) +
+  geom_point(
+    data = decomp_dt,
+    aes(x = total_shrinkage, 
+        y = factor(as.character(project_letter), levels = levels(shapley_long$project_letter)), 
+        fill = "Total shrinkage", shape = "Total shrinkage"),
+    inherit.aes = FALSE,
+    size = 2.5,
+    color = "black"
+  ) +
+  scale_shape_manual(name = NULL, 
+                     values = c("Total shrinkage" = 23),
+                     labels = c("Total shrinkage" = "Total Shrinkage")
+                     ) +
   geom_vline(xintercept = 0, color = "gray40", linewidth = 0.6) +
-  scale_fill_manual(values = component_colors) +
+  scale_fill_manual(
+    values = c(component_colors, "Total shrinkage" = "black"),
+    breaks = c("Total shrinkage", names(component_colors)),
+    labels = c(
+      "Total shrinkage"     = "Total shrinkage",
+      "Control stability"   = "Control Stability",
+      "Treatment response"  = "Treatment Response",
+      "Variance inflation"  = "Variance Inflation"
+    )
+  ) +
   scale_x_continuous(
     breaks = seq(-2.5, 7.5, 2.5),
     sec.axis = dup_axis(
@@ -2381,6 +2417,10 @@ p_shapley <- ggplot(shapley_long, aes(x = phi, y = project_letter, fill = compon
       labels = c("← reducing", "contributing to shrinkage→"),
       name   = NULL
     )
+  ) +
+  guides(
+    fill  = guide_legend(nrow = 2, ncol = 2, byrow = TRUE, override.aes = list(shape = c(23, NA, NA, NA))),
+    shape = "none"
   ) +
   labs(
     x     = "Hedges' g",
@@ -2398,13 +2438,13 @@ p_shapley <- ggplot(shapley_long, aes(x = phi, y = project_letter, fill = compon
     panel.border         = element_blank(),
     axis.line.x.top      = element_blank(),
     axis.line.y.right    = element_blank(),
-    axis.text.x.top      = element_text(size = 14, margin = margin(b = 8))
+    axis.text.x.top      = element_text(size = 9, margin = margin(b = 4))
   )
 
 p_shapley
 
-saveRDS(p_shapley, file.path(panels_dir, "p_shapley.rds"))   # ADD THIS LINE
-
+saveRDS(p_shapley, file.path(panels_dir, "p_shapley.rds"))
+        
 ggsave(
   filename = file.path(save_dir_decide, "shrinkage_shapley.png"),
   plot = p_shapley, width = 10, height = 7, dpi = 300
@@ -2448,3 +2488,181 @@ ggsave(
   plot = p_comb_decide, width = 10, height = 7, dpi = 300
 )
 
+##### Compare absolute vs. sign-projected Shapley decomposition ####
+
+# Recompute using decomp_dt signed coalition g-values
+# decomp_dt currently stores g0, g_c, etc as absolute values
+# Take the signed versions and rebuild them the same way they were originally derived, before the abs() was applied.
+
+decomp_compare <- decomp_dt[, .(
+  project_letter,
+  g_exp, g_conf,
+  
+  # signed coalition values
+  g0_signed    = g_exp,
+  g_c_signed   = hedges_g_from_parts(mu_ctrl_conf,  mu_treated_exp,  sd_exp_pooled,  n_ctrl_exp,  n_treated_exp),
+  g_t_signed   = hedges_g_from_parts(mu_ctrl_exp,   mu_treated_conf, sd_exp_pooled,  n_ctrl_exp,  n_treated_exp),
+  g_s_signed   = hedges_g_from_parts(mu_ctrl_exp,   mu_treated_exp,  sd_conf_pooled, n_ctrl_conf, n_treated_conf),
+  g_ct_signed  = hedges_g_from_parts(mu_ctrl_conf,  mu_treated_conf, sd_exp_pooled,  n_ctrl_exp,  n_treated_exp),
+  g_cs_signed  = hedges_g_from_parts(mu_ctrl_conf,  mu_treated_exp,  sd_conf_pooled, n_ctrl_conf, n_treated_conf),
+  g_ts_signed  = hedges_g_from_parts(mu_ctrl_exp,   mu_treated_conf, sd_conf_pooled, n_ctrl_conf, n_treated_conf),
+  g_cts_signed = g_conf
+)]
+
+# Compute both versions row by row
+results_list <- lapply(seq_len(nrow(decomp_compare)), function(i) {
+  row <- decomp_compare[i]
+  s <- sign(row$g0_signed)  # sign anchor = exploratory direction
+  
+  # ORIGINAL: v(S) = |g(S)|
+  orig <- compute_shapley(
+    abs(row$g0_signed), abs(row$g_c_signed), abs(row$g_t_signed), abs(row$g_s_signed),
+    abs(row$g_ct_signed), abs(row$g_cs_signed), abs(row$g_ts_signed), abs(row$g_cts_signed)
+  )
+  total_orig <- abs(row$g0_signed) - abs(row$g_cts_signed)
+  
+  # FIX: v(S) = sign(g_exp) * g(S)
+  fixed <- compute_shapley(
+    s * row$g0_signed, s * row$g_c_signed, s * row$g_t_signed, s * row$g_s_signed,
+    s * row$g_ct_signed, s * row$g_cs_signed, s * row$g_ts_signed, s * row$g_cts_signed
+  )
+  # Sign-projected shrinkage: |g_exp| - sign(g_exp)*g_conf
+  # Equals |g_exp| - |g_conf| when signs agree, but correctly detects full
+  # reversals as maximal shrinkage instead of scoring them as zero/negative like the older |g_exp| - |g_conf|
+  total_fixed <- s * row$g0_signed - s * row$g_cts_signed
+  
+  data.table(
+    project_letter    = row$project_letter,
+    sign_reversal      = sign(row$g0_signed) != sign(row$g_cts_signed),
+    
+    total_shrinkage_orig  = round(total_orig, 3),
+    total_shrinkage_fixed = round(total_fixed, 3),
+    
+    phi_ctrl_orig     = round(orig$phi_ctrl, 3),
+    phi_ctrl_fixed    = round(fixed$phi_ctrl, 3),
+    
+    phi_treated_orig  = round(orig$phi_treated, 3),
+    phi_treated_fixed = round(fixed$phi_treated, 3),
+    
+    phi_sd_orig       = round(orig$phi_sd, 3),
+    phi_sd_fixed      = round(fixed$phi_sd, 3)
+  )
+})
+
+comparison_dt <- rbindlist(results_list)
+
+# Check that additivity holds under both formulas
+comparison_dt[, check_orig  := round(phi_ctrl_orig  + phi_treated_orig + phi_sd_orig - total_shrinkage_orig, 6)]
+comparison_dt[, check_fixed := round(phi_ctrl_fixed + phi_treated_fixed + phi_sd_fixed - total_shrinkage_fixed, 6)]
+
+print(comparison_dt)
+
+# Flag which projects change meaningfully (not just full reversals)
+comparison_dt[, total_changed := total_shrinkage_orig != total_shrinkage_fixed]
+comparison_dt[, attribution_changed := 
+                (phi_ctrl_orig != phi_ctrl_fixed) | 
+                (phi_treated_orig != phi_treated_fixed) | 
+                (phi_sd_orig != phi_sd_fixed)
+]
+
+comparison_dt[, .(project_letter, sign_reversal, total_changed, attribution_changed)]
+
+##### Signed Shapley plots ####
+
+shapley_long_signed <- melt(
+  comparison_dt[, .(
+    project_letter,
+    `Control stability`  = phi_ctrl_fixed,
+    `Treatment response` = phi_treated_fixed,
+    `Variance inflation` = phi_sd_fixed
+  )],
+  id.vars = "project_letter", variable.name = "component", value.name = "phi"
+)
+setDT(shapley_long_signed)
+set(shapley_long_signed, j = "project_letter", value = factor(shapley_long_signed$project_letter, levels = project_ord))
+set(shapley_long_signed, j = "component", value = factor(shapley_long_signed$component,
+                                                         levels = c("Control stability", "Treatment response", "Variance inflation")))
+
+p_shapley_signed <- ggplot(shapley_long_signed, aes(x = phi, y = project_letter, fill = component)) +
+  geom_col(position = "stack", width = 0.7) +
+  geom_point(
+    data = comparison_dt,
+    aes(x = total_shrinkage_fixed, 
+        y = factor(as.character(project_letter), levels = levels(shapley_long_signed$project_letter)), 
+        fill = "Total shrinkage", shape = "Total shrinkage"),
+    inherit.aes = FALSE,
+    size = 2.5,
+    color = "black"
+  ) +
+  scale_shape_manual(name = NULL, 
+                     values = c("Total shrinkage" = 23),
+                     labels = c("Total shrinkage" = "Total Shrinkage")
+  ) +
+  geom_vline(xintercept = 0, color = "gray40", linewidth = 0.6) +
+  scale_fill_manual(
+    values = c(component_colors, "Total shrinkage" = "black"),
+    breaks = c("Total shrinkage", names(component_colors)),
+    labels = c(
+      "Total shrinkage"     = "Total shrinkage",
+      "Control stability"   = "Control Stability",
+      "Treatment response"  = "Treatment Response",
+      "Variance inflation"  = "Variance Inflation"
+    )
+  ) +
+  scale_x_continuous(
+    sec.axis = dup_axis(
+      breaks = c(-2, 4),
+      labels = c("← reducing", "contributing to shrinkage→"),
+      name   = NULL
+    )
+  ) +
+  guides(
+    fill  = guide_legend(nrow = 2, ncol = 2, byrow = TRUE, override.aes = list(shape = c(23, NA, NA, NA))),
+    shape = "none"
+  ) +
+  labs(
+    x     = "Hedges' g",
+    y     = NULL,
+    fill  = NULL,
+    title = NULL
+  ) +
+  theme_prism() +
+  theme(
+    legend.position      = "bottom",
+    panel.grid.major.x   = element_line(color = "gray90"),
+    panel.grid.major.y   = element_blank(),
+    axis.ticks.x.top     = element_blank(),
+    axis.ticks.y         = element_blank(),
+    panel.border         = element_blank(),
+    axis.line.x.top      = element_blank(),
+    axis.line.y.right    = element_blank(),
+    axis.text.x.top      = element_text(size = 9, margin = margin(b = 4))
+  )
+
+p_shapley_signed
+
+p_total_signed <- ggplot(comparison_dt, aes(x = total_shrinkage_fixed, 
+                                            y = factor(project_letter, levels = project_ord))) +
+  geom_col(fill = "#4C9BE8", width = 0.7) +
+  geom_vline(xintercept = 0, color = "gray40", linewidth = 0.6) +
+  labs(
+    x     = "|exploratory g| − sign(exploratory g)·confirmatory g",
+    y     = NULL,
+    title = NULL
+  ) +
+  theme_prism() +
+  theme(
+    panel.grid.major.x = element_line(color = "gray90"),
+    panel.grid.major.y = element_blank()
+  )
+
+p_comb_decide_signed <- p_total_signed + p_shapley_signed + plot_layout(ncol = 2)
+p_comb_decide_signed
+
+# Save under DIFFERENT names — does not overwrite original p_shapley/p_total
+saveRDS(p_shapley_signed, file.path(panels_dir, "p_shapley_signed.rds"))
+
+ggsave(
+  filename = file.path(save_dir_decide, "shrinkage_shapley_signed.png"),
+  plot = p_comb_decide_signed, width = 10, height = 7, dpi = 300
+)

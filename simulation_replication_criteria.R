@@ -27,8 +27,8 @@ data_dir <- here("data", "empyrical_effect_size_datasets")
 meta <- read.csv(
   file.path(data_dir, "meta_effectsize_bonapersona.csv")
 )
-# 
-# save_dir <- file.path("simulation_results", dataset_name)
+
+save_dir <- file.path("simulation_results", dataset_name)
 # if (!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
 
 #### Empyrical ES dataset: Carneiro 2018 (Pessimistic) ####
@@ -45,14 +45,14 @@ meta <- read.csv(
 # if (!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
 
 # #### Empyrical ES dataset: Rosso 2022 ####
-# Anxiety dataset, https://doi.org/10.1016/j.neubiorev.2022.104928
+## Anxiety dataset, https://doi.org/10.1016/j.neubiorev.2022.104928
 # dataset_name <- "rosso_2022"
 # 
 # meta <- read_excel(
 #   file.path(data_dir, "SR1_0_forR_rosso.xlsx"),
 #   sheet = "default"
 # )
-# # 
+# #
 # save_dir <- file.path("simulation_results", dataset_name)
 # if (!dir.exists(save_dir)) dir.create(save_dir, recursive = TRUE)
 
@@ -78,38 +78,44 @@ if (RUN_SIMULATION) {
       fill = "grey40"
     ) +
     labs(
-      x = expression(paste("Hedge's ", italic("g"), " (log scale)")),
-      y = "Number of effect sizes",
+      x = expression(paste("Hedge's g (log scale)")),
+      y = "Number of Effect Sizes",
       title = NULL
     ) +
+    coord_cartesian(xlim = c(-20, 20)) +
     scale_x_continuous(
       trans = "pseudo_log",
-      breaks = c(-20, -7, -3, -1.5, -0.8, 0, 0.8, 1.5, 3, 7, 20),
-      labels = scales::label_number(accuracy = 0.1)
+      breaks = c(-20, -7, -3, -1, 0, 1, 3, 7, 20),
+      labels = scales::label_number(accuracy = 1)
     ) +
     theme_minimal(base_size = 18, base_family = "Arial") +
     theme(
-      plot.title = element_text(
-        size = 22,
-        face = "bold",
-        hjust = 0.5
-      ),
-      axis.title.x = element_text(
-        size = 20,
-        margin = margin(t = 18)
-      ),
-      axis.title.y = element_text(
-        size = 20,
-        margin = margin(r = 12)
-      ),
+    # plot.title = element_text(
+    #   size = 12,
+    #   face = "bold",
+    #   hjust = 0.5
+    # ),
+    # axis.title.x = element_text(
+    #   size = 12,
+    #   margin = margin(t = 18)
+    # ),
+    # axis.title.y = element_text(
+    #   size = 12,
+    #   margin = margin(r = 12)
+    #   ),
       axis.text = element_text(size = 10, color = "black"),
+      axis.text.x = element_text(margin = margin(t = 2)),
       panel.grid.major.x = element_blank(),
       panel.grid.minor = element_blank(),
       panel.grid.major.y = element_line(color = "grey80", linewidth = 0.3),
       axis.ticks.x = element_line(color = "black", linewidth = 0.4),
       axis.ticks.length.x = unit(4, "pt"),
       axis.line.x = element_line(color = "black", linewidth = 0.5),
-    )
+      axis.title.x = element_text(face = "bold"), 
+      axis.title.x.bottom = element_text(face = "bold"),
+      axis.title.y = element_text(face = "bold")
+    ) +
+   theme_prism()
   
   effect_sizes
   
@@ -119,7 +125,6 @@ if (RUN_SIMULATION) {
   saveRDS(effect_sizes,
           here("results", "panels", paste0("effect_sizes_", dataset_name, ".rds")))
   
-
   # Simulation parameters ---------------------------------------------------
   
   set.seed(42)
@@ -142,7 +147,6 @@ if (RUN_SIMULATION) {
   
   # Add true effects
   simulation_grid$true_effect <- rep(true_effects, length.out = nrow(simulation_grid))
-  
   
   # Simulation START --------------------------------------------------------
   
@@ -190,7 +194,7 @@ if (RUN_SIMULATION) {
   
 } else {
   simulation_results <- readRDS(
-    file.path(save_dir, paste0("simulation_results_raw_multilab", dataset_name, ".rds")))
+    file.path(save_dir, paste0("simulation_results_raw_multilab_", dataset_name, ".rds")))
 }
 
 #### Count surviving simulations after exploratory p < 0.05 filter ####
@@ -322,7 +326,7 @@ labels <- c(
   "sde_confirmed" = "Confirmatory ES > mDES",
   "small_telescope_confirmed" = "Small Telescopes",
   "ttest_sig" = "Significant & Same Direction",
-  "sceptical_sig" = "Sceptical p-value",
+  "sceptical_sig" = "Sceptical P-value",
   "direction_agreement" = "Same Direction",
   "ci_agreement" = "Exploratory ES within c-CI"
 )
@@ -364,7 +368,7 @@ criterion_order <- c(
   "Same Direction",
   "Small Telescopes",
   "Significant & Same Direction",
-  "Sceptical p-value",
+  "Sceptical P-value",
   "Exploratory ES within c-CI",
   "Confirmatory ES > mDES"
 )
@@ -425,22 +429,23 @@ plot_data_pooled[, Criterion_clean := factor(
   levels = rev(criterion_order)
 )]
 
+##### combined heatmap plot ####
 combined_heatmap_pooled <- ggplot(plot_data_pooled, 
                                   aes(x = g_shrinkage, y = Criterion_clean, fill = SuccessRate)) +
   geom_tile(color = "white") +
-  geom_text(aes(label = sprintf("%.2f", SuccessRate)), size = 5) +
+  geom_text(aes(label = sprintf("%.2f", SuccessRate)), size = 2.0) +
   scale_fill_gradient(low = "white", high = "#434343", limits = c(0, 1), name = "Success Rate") +
   facet_wrap(~ expl_effect_size_class, ncol = 3) +
-  coord_equal() +
+  # coord_equal() +
+  # coord_fixed(ratio = 2.6) +
   labs(title = NULL, x = "Effect Size Shrinkage", y = NULL) +
-  theme_minimal(base_size = 22) +
+  theme_prism() +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    strip.text  = element_text(size = 15, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+    axis.text.y = element_text(size = 10),
+    strip.text  = element_text(size = 12, face = "bold"),
     panel.spacing = unit(0.35, "lines")
-  ) +
-  theme_prism()
-
+  )
 print(combined_heatmap_pooled)
 
 ggsave(file.path(save_dir, paste0("combined_heatmap_success_rate_all_classes_pooled_n_", dataset_name, ".png")),
@@ -449,7 +454,7 @@ saveRDS(combined_heatmap_pooled,
         here("results", "panels", paste0("combined_heatmap_pooled_", dataset_name, ".rds")))
 
 
-#### Type I error ####
+#### Type I error (FPR) ####
 # Calculate False Positive Rate (FPR) for 99% shrinkage cases
 # FPR = rate of claiming replication success when true effect is around 0
 fpr_data <- simulation_results[shrinkage == 0.99,
@@ -609,29 +614,36 @@ print(overall_sensitivity[, .(criterion_clean, mean_correlation, se_correlation)
 # Add clean criterion names
 shrinkage_sensitivity[, criterion_clean := labels[criterion]]
 
-# Plot correlation between shrinkage and success rates
+##### Plot correlation between shrinkage and success rates ####
 sensitivity_plot <- ggplot(shrinkage_sensitivity, 
                            aes(
                              x = correlation, 
                              y = reorder(criterion_clean, correlation),
                              fill = expl_effect_size_class)
-                           ) +
+) +
   geom_boxplot(width = 0.6) +   
   facet_wrap(~expl_effect_size_class, ncol = 3) +
-  scale_fill_brewer(palette = "BuPu", type = "qual", name = "Exploratory Effect Size") +
+  scale_fill_manual(
+    values = c(
+      "Small"  = "#E8A8A3",
+      "Medium" = "#D97D77",
+      "Large"  = "#A34840"
+    ),
+    name = "Exploratory Effect Size"
+  ) +
   labs(
     title = NULL,
-    x = "Correlation (Shrinkage ~ Replication Success)",
+    x = "Correlation (Shrinkage ~ Confirmation Success)",
     y = NULL
   ) +
-  theme_minimal(base_size = 16) +
+  # coord_fixed(ratio = 2.6) +
   theme_prism() +
   theme(
-    strip.text = element_text(size = 16, face = "bold"),
-    plot.title = element_text(size = 20, face = "bold"),
-    legend.position = "none"
+    strip.text = element_text(size = 12, face = "bold"),   
+    axis.text  = element_text(size = 10),                  
+    legend.position = "none",
+    panel.spacing = unit(1.2, "lines")
   )
-
 
 print(sensitivity_plot)
 
@@ -641,7 +653,7 @@ ggsave(file.path(save_dir, paste0("shrinkage_sensitivity_", dataset_name, ".png"
 saveRDS(sensitivity_plot,
         here("results", "panels", paste0("shrinkage_sensitivity_", dataset_name, ".rds")))
 
-#### Precision-Recall ####
+#### Precision-Recall (PR plots) ####
 
 # Define ground truth: 
 # True Positive = 0% or 20% shrinkage (genuine replications)
@@ -777,17 +789,40 @@ print(f1_plot)
 ggsave(file.path(save_dir, paste0("f1_score_comparison_", dataset_name, ".png")), f1_plot, 
        width = 10, height = 8, dpi = 300)
 
-# Precision vs Recall scatter plot
+
+##### PR plot ####
+
+overall_pr$nudge_y <- 0
+overall_pr$nudge_y[overall_pr$criterion_clean == "Exploratory ES within c-CI"] <- 0.001
+
 pr_scatter <- ggplot(overall_pr, aes(x = mean_recall, y = mean_precision)) +
-  geom_point(size = 4, alpha = 1, color = "#CCCCCC") +
-  geom_text_repel(aes(label = criterion_clean), size = 4, max.overlaps = Inf) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", alpha = 0.5) +
+  geom_point(size = 3.2, alpha = 1, color = "#888888") +
+  geom_text_repel(
+    aes(label = criterion_clean),
+    size = 3,
+    max.overlaps = Inf,
+    box.padding = 1.2,
+    point.padding = 0.4,
+    force = 4,
+    force_pull = 0.3,
+    max.time = 2,
+    max.iter = 20000,
+    min.segment.length = 0,
+    segment.color = "grey50",
+    seed = 42,
+    nudge_y = overall_pr$nudge_y 
+  ) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", alpha = 0.15) +
   scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  scale_y_continuous(
+    limits = c(-0.05, 1.15),                  
+    breaks = seq(0, 1, 0.25),                 
+    labels = scales::percent
+  ) +
   labs(
     title = NULL,
-    x = "Sensitivity (Recall)",
-    y = "Precision (Positive Predictive Value)"
+    x = "Recall",
+    y = "Precision"
   ) +
   theme_minimal(base_size = 22) +
   theme(
@@ -836,64 +871,84 @@ pr_summary_agg <- pr_summary[, .(
 ), by = .(criterion, criterion_clean, sample_size)]
 
 # --- settings ---
-frames_dir <- file.path(save_dir, "pr_frames")
-dir.create(frames_dir, showWarnings = FALSE, recursive = TRUE)
+# frames_dir <- file.path(save_dir, "pr_frames")
+# dir.create(frames_dir, showWarnings = FALSE, recursive = TRUE)
+# 
+# n_values <- sort(unique(pr_summary_agg$sample_size))
+# frame_files <- character(length(n_values))
 
-n_values <- sort(unique(pr_summary_agg$sample_size))
-frame_files <- character(length(n_values))
-
-# --- make frames (one plot per sample_size) ---
-for(i in seq_along(n_values)) {
-  n <- n_values[i]
-  
-  plot_dt <- pr_summary_agg[sample_size == n]
-  
-  p <- ggplot(
-    plot_dt,
-    aes(x = recall, y = precision, color = criterion_clean)
-  ) +
-    geom_point(size = 3, alpha = 0.85) +
-    ggrepel::geom_text_repel(
-      aes(label = criterion_clean),
-      size = 3, max.overlaps = Inf, show.legend = FALSE
-    ) +
-    scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
-    scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-    labs(
-      title = "Precision vs Recall (binary criteria)",
-      subtitle = paste0(
-        "exploratory_n = ", n,
-        " (effect classes averaged; frame ", i, " / ", length(n_values), ")"
-      ),
-      x = "Recall",
-      y = "Precision",
-      color = "Criterion"
-    ) +
-    theme_minimal(base_size = 14) +
-    theme(legend.position = "bottom")
-  
-  frame_path <- file.path(frames_dir, sprintf("pr_points_n_%03d.png", i))
-  ggsave(frame_path, p, width = 12, height = 8, dpi = 200, bg = "white")
-  frame_files[i] <- frame_path
-}
-
-# --- stitch frames into a gif ---
-gif_path <- file.path(save_dir, "pr_precision_recall_by_n.gif")
-
-gifski::gifski(
-  png_files = frame_files,
-  gif_file = gif_path,
-  width = 1200, height = 800,
-  delay = 0.8,
-  loop = TRUE
-)
-
-gif_path
+# # --- make frames (one plot per sample_size) ---
+# for(i in seq_along(n_values)) {
+#   n <- n_values[i]
+#   
+#   plot_dt <- pr_summary_agg[sample_size == n]
+#   
+#   p <- ggplot(
+#     plot_dt,
+#     aes(x = recall, y = precision, color = criterion_clean)
+#   ) +
+#     geom_point(size = 3, alpha = 0.85) +
+#     ggrepel::geom_text_repel(
+#       aes(label = criterion_clean),
+#       size = 3, max.overlaps = Inf, show.legend = FALSE
+#     ) +
+#     scale_x_continuous(limits = c(0, 1), labels = scales::percent) +
+#     scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+#     labs(
+#       title = "Precision vs Recall (binary criteria)",
+#       subtitle = paste0(
+#         "exploratory_n = ", n,
+#         " (effect classes averaged; frame ", i, " / ", length(n_values), ")"
+#       ),
+#       x = "Recall",
+#       y = "Precision",
+#       color = "Criterion"
+#     ) +
+#     theme_minimal(base_size = 14) +
+#     theme(legend.position = "bottom")
+#   
+#   frame_path <- file.path(frames_dir, sprintf("pr_points_n_%03d.png", i))
+#   ggsave(frame_path, p, width = 12, height = 8, dpi = 200, bg = "white")
+#   frame_files[i] <- frame_path
+# }
+# 
+# # --- stitch frames into a gif ---
+# gif_path <- file.path(save_dir, "pr_precision_recall_by_n.gif")
+# 
+# gifski::gifski(
+#   png_files = frame_files,
+#   gif_file = gif_path,
+#   width = 1200, height = 800,
+#   delay = 0.8,
+#   loop = TRUE
+# )
+# 
+# gif_path
 
 # Plot PR trajectory across exploratory sample sizes
 
+##### PR trajectories plot ####
 pr_summary_agg[, sample_size := factor(sample_size, levels = c(5, 10, 15, 20))]
 setorder(pr_summary_agg, criterion_clean, sample_size)
+
+# pr_n20 <- pr_summary_agg[sample_size == "20"]
+# pr_n20[, nudge_y := 0]
+# pr_n20[, nudge_x := 0]
+# pr_n20[criterion_clean == "Same Direction", nudge_y := -0.02]
+# pr_n20[criterion_clean == "Small Telescopes", nudge_x := 0.07]
+# pr_n20[criterion_clean == "Significant & Same Direction", nudge_y := 0.06]
+# pr_n20[criterion_clean == "Sceptical P-value", nudge_x := -0.05]
+# pr_n20[criterion_clean == "Exploratory ES within c-CI", nudge_y := -0.04]
+# pr_n20[criterion_clean == "Confirmatory ES > mDES", nudge_y := -0.04]  
+
+criterion_colors <- c(
+  "Confirmatory ES > mDES"         = "#7B5EA7",
+  "Exploratory ES within c-CI"     = "#4C9F70",
+  "Same Direction"                 = "#C1440E",
+  "Sceptical P-value"              = "#8C6D46",
+  "Significant & Same Direction"   = "#2C3E66",
+  "Small Telescopes"               = "#B5566B"
+)
 
 p_pr_trajectories <- ggplot(
   pr_summary_agg,
@@ -906,31 +961,41 @@ p_pr_trajectories <- ggplot(
 ) +
   geom_path(linewidth = 1.0, alpha = 0.85) +
   geom_point(aes(shape = sample_size), size = 3.2, alpha = 0.95) +
-  ggrepel::geom_text_repel(
-    data = pr_summary_agg[sample_size == "20"],
-    aes(label = criterion_clean),
-    size = 3.5,
-    max.overlaps = Inf,
-    show.legend = FALSE,
-    box.padding = 1.3,
-    point.padding = 1.9
-  ) +
+  # ggrepel::geom_text_repel(
+  #   data = pr_n20,
+  #   aes(label = criterion_clean),
+  #   size = 3.5,
+  #   max.overlaps = Inf,
+  #   show.legend = FALSE,
+  #   box.padding = 1.3,
+  #   point.padding = 1.9,
+  #   force = 4,
+  #   force_pull = 0.3,
+  #   max.time = 2,
+  #   max.iter = 20000,
+  #   min.segment.length = 0,
+  #   segment.color = "grey50",
+  #   seed = 42,
+  #   nudge_y = pr_n20$nudge_y,
+  #   nudge_x = pr_n20$nudge_x
+  # ) +
+  scale_color_manual(values = criterion_colors) +
   scale_x_continuous(limits = c(0, 1), labels = percent_format(accuracy = 1)) +
-  scale_y_continuous(limits = c(0.75, 1), labels = percent_format(accuracy = 1)) +
-  scale_shape_discrete(name = "Exploratory n") +
+  scale_y_continuous(limits = c(0.72, 1.02), labels = percent_format(accuracy = 1)) +
+  scale_shape_discrete(name = "Exploratory Sample Size") +
   labs(
-    title = NULL, # "Precision–Recall trajectories across exploratory sample size",
-    subtitle = NULL, # paste("Points are n =", paste(n_keep, collapse = ", "), " (effect classes averaged)"),
+    title = NULL,
+    subtitle = NULL,
     x = "Recall",
     y = "Precision",
-    color = "Criterion"
+    color = "Confirmation Criterion"
   ) +
   theme_prism(base_size = 14) +
   theme(
     legend.position = "right",
-    legend.box = "vertical"
+    legend.box = "vertical",
+    legend.title = element_text(size = 11, face = "bold")
   )
-
 print(p_pr_trajectories)
 
 ggsave(file.path(save_dir, paste0("p_pr_trajectories_", dataset_name, ".png")), p_pr_trajectories, 
@@ -939,82 +1004,103 @@ ggsave(file.path(save_dir, paste0("p_pr_trajectories_", dataset_name, ".png")), 
 saveRDS(p_pr_trajectories,
         here("results", "panels", paste0("p_pr_trajectories_", dataset_name, ".rds")))
 
+
+# Monte Carlo Standard Errors ---------------------------------------------
+
+# Return MCSE for each unique (exploratory_n, shrinkage, effect_class) group
+mcse_summary <- simulation_results[, {
+  lapply(.SD, function(x) {
+    p <- mean(as.logical(x), na.rm = TRUE)
+    n <- sum(!is.na(x))
+    sqrt(p * (1 - p) / n)
+  })
+}, by = .(exploratory_n, shrinkage, expl_effect_size_class), .SDcols = replication_criteria]
+
+mcse_long <- melt(mcse_summary, 
+                  id.vars = c("exploratory_n", "shrinkage", "expl_effect_size_class"),
+                  variable.name = "criterion", value.name = "mcse")
+
+cat("Maximum MCSE across all reported cells:", round(max(mcse_long$mcse, na.rm = TRUE), 4), "\n")
+cat("Median MCSE across all reported cells:", round(median(mcse_long$mcse, na.rm = TRUE), 4), "\n")
+cat("Smallest n underlying any reported cell:", min_cell_n, "\n")
+
+
 # Criteria landscape: FPR vs PR -------------------------------------------
 
-setDT(overall_pr)
-setDT(pr_pooled_data)
-
-# Merge PR with FPR 
-criteria_landscape <- merge(
-  overall_pr,
-  pr_pooled_data,
-  by.x = "criterion",
-  by.y = "Criterion",
-  all.x = TRUE
-)
-
-setnames(criteria_landscape, "mean_FPR", "fpr")
-
-criteria_landscape_plot <- ggplot(
-  criteria_landscape,
-  aes(x = fpr, y = mean_recall)
-) +
-  geom_point(
-    aes(size = mean_precision),
-    shape = 21,
-    fill = "#6C6C6C",
-    # colour = "black",
-    # stroke = 0.2,
-    alpha = 0.9
-  ) +
-  ggrepel::geom_text_repel(
-    aes(label = criterion_clean),
-    size = 4,
-    max.overlaps = Inf,
-    box.padding = 0,
-    point.padding = 17,
-    show.legend = FALSE
-  ) +
-  scale_x_continuous(
-    limits = c(0, 0.75),
-    labels = percent_format(accuracy = 1)
-  ) +
-  scale_y_continuous(
-    limits = c(0, 1),
-    labels = percent_format(accuracy = 1)
-  ) +
-  scale_size_continuous(
-    range = c(3, 10),
-    labels = percent_format(accuracy = 1),
-    name = "Precision"
-  ) +
-  scale_shape_manual(
-    values = c(`FALSE` = 16, `TRUE` = 17),
-    name = NULL
-  ) +
-  labs(
-    title = NULL, # "Replication criteria by operating characteristics",
-    # subtitle = "x = false positive propensity (99% shrinkage), y = sensitivity (recall at 0–20% shrinkage)",
-    x = "False positive propensity (99% shrinkage)",
-    y = "Sensitivity (recall at 0–20% shrinkage)"
-  ) +
-  theme_prism() +
-  theme(
-    legend.position = "right",
-    legend.title = element_text(size = 14, face = "bold"),
-    plot.title = element_text(face = "bold")
-  )
-  
-
-print(criteria_landscape_plot)
-
-ggsave(
-  filename = file.path(save_dir, paste0("criteria_landscape_", dataset_name, ".png")),
-  plot = criteria_landscape_plot,
-  width = 11,
-  height = 7,
-  dpi = 300,
-  bg = "white"
-)
-
+# setDT(overall_pr)
+# setDT(pr_pooled_data)
+# 
+# # Merge PR with FPR 
+# criteria_landscape <- merge(
+#   overall_pr,
+#   pr_pooled_data,
+#   by.x = "criterion",
+#   by.y = "Criterion",
+#   all.x = TRUE
+# )
+# 
+# setnames(criteria_landscape, "mean_FPR", "fpr")
+# 
+# criteria_landscape_plot <- ggplot(
+#   criteria_landscape,
+#   aes(x = fpr, y = mean_recall)
+# ) +
+#   geom_point(
+#     aes(size = mean_precision),
+#     shape = 21,
+#     fill = "#6C6C6C",
+#     # colour = "black",
+#     # stroke = 0.2,
+#     alpha = 0.9
+#   ) +
+#   ggrepel::geom_text_repel(
+#     aes(label = criterion_clean),
+#     size = 4,
+#     max.overlaps = Inf,
+#     box.padding = 0,
+#     point.padding = 17,
+#     show.legend = FALSE
+#   ) +
+#   scale_x_continuous(
+#     limits = c(0, 0.75),
+#     labels = percent_format(accuracy = 1)
+#   ) +
+#   scale_y_continuous(
+#     limits = c(0, 1),
+#     labels = percent_format(accuracy = 1)
+#   ) +
+#   scale_size_continuous(
+#     range = c(3, 10),
+#     labels = percent_format(accuracy = 1),
+#     name = "Precision"
+#   ) +
+#   scale_shape_manual(
+#     values = c(`FALSE` = 16, `TRUE` = 17),
+#     name = NULL
+#   ) +
+#   labs(
+#     title = NULL, # "Replication criteria by operating characteristics",
+#     # subtitle = "x = false positive propensity (99% shrinkage), y = sensitivity (recall at 0–20% shrinkage)",
+#     x = "False positive propensity (99% shrinkage)",
+#     y = "Sensitivity (recall at 0–20% shrinkage)"
+#   ) +
+#   theme_prism() +
+#   theme(
+#     legend.position = "right",
+#     legend.title = element_text(size = 14, face = "bold"),
+#     plot.title = element_text(face = "bold")
+#   )
+#   
+# 
+# print(criteria_landscape_plot)
+# 
+# ggsave(
+#   filename = file.path(save_dir, paste0("criteria_landscape_", dataset_name, ".png")),
+#   plot = criteria_landscape_plot,
+#   width = 11,
+#   height = 7,
+#   dpi = 300,
+#   bg = "white"
+# )
+# 
 

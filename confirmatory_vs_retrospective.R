@@ -100,7 +100,7 @@ setnames(cv_decide_by_project, "project_letter", "id")
 ext_decide <- rbind(cv_ext_by_project, cv_decide_by_project)
 
 cv_decide_vs_retrospective <- ggplot(ext_decide, 
-                                     aes(x = factor(dataset, levels = c("retrospective", "DECIDE")), 
+                                     aes(x = factor(dataset, levels = c("DECIDE","retrospective")), 
                                          y = cv_g, fill = dataset)) +
   geom_boxplot(alpha = 0.85, width = 0.5, outlier.shape = NA, linewidth = 0.6) +
   geom_beeswarm(
@@ -117,8 +117,8 @@ cv_decide_vs_retrospective <- ggplot(ext_decide,
   ) +
   scale_x_discrete(
     labels = c(
-      retrospective = "Retrospective\nMulti-lab",
-      DECIDE = "Confirmatory\nMulti-lab"
+      retrospective = "eCS",
+      DECIDE = "pCS"
     )
   ) +
   scale_y_log10(
@@ -127,7 +127,8 @@ cv_decide_vs_retrospective <- ggplot(ext_decide,
   ) +
   theme_minimal() +
   theme_prism(
-    axis_text_angle = 45) +
+    # axis_text_angle = 45
+    ) +
   theme(
     legend.position = "none",
     panel.grid.major = element_blank(),
@@ -137,7 +138,7 @@ cv_decide_vs_retrospective <- ggplot(ext_decide,
 
 cv_decide_vs_retrospective
 
-saveRDS(cv_decide_vs_retrospective, file.path(panels_dir, "cv_decide_vs_retrospective.rds"))   # ADD
+saveRDS(cv_decide_vs_retrospective, file.path(panels_dir, "cv_decide_vs_retrospective.rds"))
 
 ggsave(
   filename = file.path(save_dir_external, "cv_decide_vs_retrospective.png"),
@@ -147,10 +148,10 @@ ggsave(
   dpi = 300
 )
 
-stat_table_cv   <- make_pw_wilcox_stat_tbl(data = ext_decide, 
+stat_table_cv <- make_pw_wilcox_stat_tbl(data = ext_decide, 
                                            y = "cv_g",  
                                            group = "dataset")
-
+stat_table_cv
 
 ##### Root Mean Square Error (RMSE) ####
 rmse_ext <- multi_lab_dt[,
@@ -186,7 +187,7 @@ setnames(rmse_decide, "project_letter", "id")
 rmse_ext_decide <- rbind(rmse_ext, rmse_decide)
 
 rmse_ext_decide_plot <- ggplot(rmse_ext_decide, 
-                               aes(x = factor(dataset, levels = c("retrospective", "DECIDE")), 
+                               aes(x = factor(dataset, levels = c("DECIDE", "retrospective")), 
                                    y = rmse, fill = dataset)) +
   geom_boxplot(alpha = 0.85, width = 0.5, outlier.shape = NA, linewidth = 0.6) +
   geom_beeswarm(
@@ -203,8 +204,8 @@ rmse_ext_decide_plot <- ggplot(rmse_ext_decide,
   ) +
   scale_x_discrete(
     labels = c(
-      retrospective = "Multi-lab \nRetrospective",
-      DECIDE = "Multi-lab \nConfirmatory"
+      retrospective = "eCS",
+      DECIDE = "pCS"
     )
   ) +
   # scale_y_log10(
@@ -213,17 +214,18 @@ rmse_ext_decide_plot <- ggplot(rmse_ext_decide,
   # ) +
   theme_minimal() +
   theme_prism(
-    axis_text_angle = 45
+    # axis_text_angle = 45
   ) +
   theme(
     legend.position = "none",
     panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
+    panel.grid.minor = element_blank(),
+    # axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
   )
   
 rmse_ext_decide_plot
 
-saveRDS(rmse_ext_decide_plot, file.path(panels_dir, "rmse_ext_decide_plot.rds"))   # ADD
+saveRDS(rmse_ext_decide_plot, file.path(panels_dir, "rmse_ext_decide_plot.rds"))   
 
 ggsave(
   filename = file.path(save_dir_external, "rmse_ext_decide_plot.png"),
@@ -234,7 +236,7 @@ ggsave(
 )
 
 stat_table_rmse <- make_pw_wilcox_stat_tbl(data = rmse_ext_decide,  y = "rmse",  group = "dataset")
-
+stat_table_rmse
 
 # Meta-analysis_______________ ####
 
@@ -533,10 +535,10 @@ combined_iv$group <- interaction(
 combined_iv$group <- factor(
   combined_iv$group,
   levels = c(
-    "retrospective - Exploratory",
-    "retrospective - Multi_lab",
     "DECIDE - Exploratory",
-    "DECIDE - Confirmatory"
+    "DECIDE - Confirmatory",
+    "retrospective - Exploratory",
+    "retrospective - Multi_lab"
   )
 )
 
@@ -640,8 +642,9 @@ summary(m_clm)
 
 Anova(m_clm, type = "III")
 
-
+##### mIV plot ####
 cols_dataset <- c("DECIDE" = "#00AFBB", "retrospective" = "#E7B800")
+combined_iv_decide_retrospective$iv_score <- as.numeric(as.character(combined_iv_decide_retrospective$iv_score))
 
 combined_iv_decide_retrospective_plot <-
   ggplot(
@@ -673,48 +676,51 @@ combined_iv_decide_retrospective_plot <-
   scale_x_discrete(
     labels = c(
       "retrospective - Exploratory" = "Exploratory",
-      "retrospective - Multi_lab"   = "Multi-lab",
+      "retrospective - Multi_lab"   = "Confirmatory",
       "DECIDE - Exploratory"        = "Exploratory",
-      "DECIDE - Confirmatory"       = "Multi-lab"
+      "DECIDE - Confirmatory"       = "Confirmatory"
     )
   ) +
   labs(
     title = NULL,
     x = NULL,
-    y = "minimal Internal Validity (mIV)"
+    y = "minimal Internal\n Validity (mIV)"
   ) +
-  ggpubr::stat_pvalue_manual(
-    stat_table_iv_selected,
-    label = "p_label",
-    xmin = "group1",
-    xmax = "group2",
-    y.position = "y.position",
-    tip.length = 0.01,
-    bracket.size = 0.4,
-    size = 4
-  ) +
+  # ggpubr::stat_pvalue_manual(
+  #   stat_table_iv_selected,
+  #   label = "p_label",
+  #   xmin = "group1",
+  #   xmax = "group2",
+  #   y.position = "y.position",
+  #   tip.length = 0.01,
+  #   bracket.size = 0.4,
+  #   size = 4
+  # ) +
   scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.1))) +
   coord_cartesian(clip = "off") +
   annotate(
-    "text", x = 1.5, y = 0, label = "Retrospective",
-    vjust = 5, size = 5, fontface = "bold"
+    "text", x = 1.5, y = 0, label = "eCS",
+    vjust = 8, size = 5, fontface = "bold"
   ) +
   annotate(
-    "text", x = 3.5, y = 0, label = "Confirmatory",
-    vjust = 5, size = 5, fontface = "bold"
+    "text", x = 3.5, y = 0, label = "pCS",
+    vjust = 8, size = 5, fontface = "bold"
   ) +
   theme_prism() +
   theme(
     legend.position = "none",
-    axis.text = element_text(size = 14),
-    axis.text.x = element_text(vjust = 0.5),
-    axis.title.y = element_text(size = 16),
-    plot.margin = margin(10, 40, 50, 10)
+    axis.text    = element_text(size = 14),
+    axis.text.x  = element_text(angle = 45, hjust = 1, vjust = 1, margin = margin(t = 2)),
+    axis.text.y  = element_text(margin = margin(r = 4)),
+    axis.ticks.x = element_blank(),
+    axis.ticks.length = unit(2.75, "pt"),
+    axis.title.y = element_text(margin = margin(r = 0.002)),
+    plot.margin  = margin(20, 40, 60, 0)
   )
 
 combined_iv_decide_retrospective_plot
 
-saveRDS(combined_iv_decide_retrospective_plot, file.path(panels_dir, "combined_iv_decide_retrospective_plot.rds"))   # ADD
+saveRDS(combined_iv_decide_retrospective_plot, file.path(panels_dir, "combined_iv_decide_retrospective_plot.rds"))   
 
 ggsave(
   filename = file.path(save_dir_external, "combined_iv_decide_retrospective.png"),
@@ -733,55 +739,62 @@ my_priors <- c(
   prior(normal(0, 1.5), class = "Intercept")
 )
 
-m.1 <- brm(
-  formula = iv_score ~  stage*dataset+(1|project_id),
-  data = combi,
-  ned_iv_decide_retrospective,
-  prior = my_priors,
-  family = cumulative ("probit"),
-  chains = 4,          
-  cores = 4,           
-  iter = 2000,         
-  seed = 42,
-  save_pars = save_pars(all = TRUE)
-)
+# m.1 <- brm(
+#   formula = iv_score ~  stage*dataset+(1|project_id),
+#   data = combined_iv_decide_retrospective,
+#   ned_iv_decide_retrospective,
+#   prior = my_priors,
+#   family = cumulative ("probit"),
+#   chains = 4,          
+#   cores = 4,           
+#   iter = 2000,         
+#   seed = 42,
+#   save_pars = save_pars(all = TRUE)
+# )
+# 
+# summary(m.1)
 
-summary(m.1)
-
-# 1. Create a conditions dataframe for all levels of 'dataset'
-conds <- make_conditions(m.1, vars = "dataset")
-
-# 2. Generate the conditional effects plot
-conditional_effects(
-  m.1, 
-  effects = "stage", 
-  conditions = conds, 
-  categorical = TRUE
-)
-
-# Plots actual data (y) vs. simulated data from the model (yrep)
-pp_check(m.1, type = "bars", ndraws = 100) +
-  ggplot2::labs(title = "Posterior Predictive Check: Actual vs. Predicted")
-
-# Add LOO criterion to the model
-m.1 <- add_criterion(m.1, "loo", moment_match = TRUE, overwrite = TRUE)
-
-# Print the LOO results
-loo(m.1)
+# # 1. Create a conditions dataframe for all levels of 'dataset'
+# conds <- make_conditions(m.1, vars = "dataset")
+# 
+# # 2. Generate the conditional effects plot
+# conditional_effects(
+#   m.1, 
+#   effects = "stage", 
+#   conditions = conds, 
+#   categorical = TRUE
+# )
+# 
+# # Plots actual data (y) vs. simulated data from the model (yrep)
+# pp_check(m.1, type = "bars", ndraws = 100) +
+#   ggplot2::labs(title = "Posterior Predictive Check: Actual vs. Predicted")
+# 
+# # Add LOO criterion to the model
+# m.1 <- add_criterion(m.1, "loo", moment_match = TRUE, overwrite = TRUE)
+# 
+# # Print the LOO results
+# loo(m.1)
 
 
 # Experimental units ______________________####
 # EU in exploratory vs multi-lab in DECIDE vs retrospective
 
-retrospective_eu <- multi_lab_dt[,.(EU, dataset = "retrospective")]
-decide_eu <- confirmatory_decide[,
-                                 .(EU = n1 + n2,
-                                   dataset = "DECIDE")]
+# retrospective_eu <- multi_lab_dt[,.(EU, 
+#                                     plot_id, 
+#                                     dataset = "retrospective")]
+# decide_eu <- confirmatory_decide[,
+#                                  .(EU = n1 + n2,
+#                                    project_letter,
+#                                    dataset = "DECIDE")]
+# 
+# decide_eu   <- decide_eu[!is.na(EU)]
+# retrospective_eu <- retrospective_eu[!is.na(EU)]
+# 
+# setnames(retrospective_eu, "plot_id", "id")
+# setnames(decide_eu, "project_letter", "id")
 
-decide_eu   <- decide_eu[!is.na(EU)]
-retrospective_eu <- retrospective_eu[!is.na(EU)]
-
-
+retrospective_exploratory <- id_plotid_map[retrospective_exploratory, on = "id"]
+multi_lab_dt <- id_plotid_map[multi_lab_dt, on = "id"]
 
 # bind DECIDE df
 comb_decide_exernal_eu <- rbindlist(list(
@@ -790,7 +803,8 @@ comb_decide_exernal_eu <- rbindlist(list(
                     group = "exploratory DECIDE",
                     dataset = "DECIDE",
                     stage = "exploratory",
-                    eu = exploratory_n 
+                    eu = exploratory_n,
+                    id = project_letter
                   )
                  ],
   confirmatory_eu_decide[,
@@ -798,7 +812,8 @@ comb_decide_exernal_eu <- rbindlist(list(
                     group = "confirmatory DECIDE",
                     dataset = "DECIDE",
                     stage = "Multi_lab",
-                    eu = confirmatory_n
+                    eu = confirmatory_n,
+                    id = project_letter
                   )
                   ],
   retrospective_exploratory[,
@@ -806,7 +821,8 @@ comb_decide_exernal_eu <- rbindlist(list(
                 group = "exploratory retrospective",
                 dataset = "retrospective",
                 stage = "exploratory",
-                eu = EU
+                eu = EU,
+                id = plot_id
               )
               ],
   multi_lab_dt[,
@@ -814,7 +830,8 @@ comb_decide_exernal_eu <- rbindlist(list(
                  group = "multi_lab retrospective",
                  dataset = "retrospective",
                  stage = "Multi_lab",
-                 eu = EU
+                 eu = EU,
+                 id = plot_id
                )
                ]
   )
@@ -823,12 +840,45 @@ comb_decide_exernal_eu <- rbindlist(list(
 comb_decide_exernal_eu$group <- factor(
   comb_decide_exernal_eu$group,
   levels = c(
-    "exploratory retrospective",
-    "multi_lab retrospective",
     "exploratory DECIDE",
-    "confirmatory DECIDE"
+    "confirmatory DECIDE",
+    "exploratory retrospective",
+    "multi_lab retrospective"
   )
 )
+
+write.csv(comb_decide_exernal_eu, here("results", "combined_eu.csv"), row.names = FALSE)
+
+# Mean EU by group
+comb_decide_exernal_eu[, .(mean_eu = mean(eu)), by = group]
+
+# Ratios
+means <- comb_decide_exernal_eu[, .(mean_eu = mean(eu)), by = group]
+
+means[group == "confirmatory DECIDE", mean_eu] /
+  means[group == "exploratory DECIDE", mean_eu]
+
+means[group == "multi_lab retrospective", mean_eu] /
+  means[group == "exploratory retrospective", mean_eu]
+
+# Ratios
+medians <- comb_decide_exernal_eu[, .(median_eu = median(eu)), by = group]
+
+medians[group == "confirmatory DECIDE", median_eu] /
+  medians[group == "exploratory DECIDE", median_eu]
+
+medians[group == "multi_lab retrospective", median_eu] /
+  medians[group == "exploratory retrospective", median_eu]
+
+
+
+# Summing all EU
+sums <- comb_decide_exernal_eu[, .(sum_eu = sum(eu)), by = group]
+sums[group == "confirmatory DECIDE", sum_eu] /
+  sums[group == "exploratory DECIDE", sum_eu]
+
+sums[group == "multi_lab retrospective", sum_eu] /
+  sums[group == "exploratory retrospective", sum_eu]
 
 stat_tbl_eu <- make_pw_wilcox_stat_tbl(
   data = comb_decide_exernal_eu,
@@ -842,6 +892,8 @@ stat_tbl_eu_selected <- stat_tbl_eu[
     group1 == "multi_lab retrospective" & group2 == "confirmatory DECIDE"
   
 ]
+
+cols_dataset_eu <- c("DECIDE" = "#00AFBB", "retrospective" = "#E7B800")
 
 
 comb_decide_exernal_eu_plot <-
@@ -866,16 +918,16 @@ comb_decide_exernal_eu_plot <-
     priority = "density",
     cex = 1.2
   )+
-  scale_fill_manual(values = cols_dataset) +
+  scale_fill_manual(values = cols_dataset_eu) +
   scale_alpha_manual(
     values = c("exploratory" = 0.35, "Multi_lab" = 0.85)
   ) +
   scale_x_discrete(
     labels = c(
       "exploratory retrospective" = "Exploratory",
-      "multi_lab retrospective"   = "Multi-lab",
+      "multi_lab retrospective"   = "Confirmatory",
       "exploratory DECIDE"        = "Exploratory",
-      "confirmatory DECIDE"       = "Multi-lab"
+      "confirmatory DECIDE"       = "Confirmatory"
     )
   ) +
   labs(
@@ -884,39 +936,40 @@ comb_decide_exernal_eu_plot <-
     y = "Experimental Units",
     fill = NULL
   ) +
-  ggpubr::stat_pvalue_manual(
-    stat_tbl_eu_selected,
-    label = "p_label",
-    xmin = "group1",
-    xmax = "group2",
-    y.position = "y.position",
-    tip.length = 0.01,
-    bracket.size = 0.4,
-    size = 4
-  ) +
+  # ggpubr::stat_pvalue_manual(
+  #   stat_tbl_eu_selected,
+  #   label = "p_label",
+  #   xmin = "group1",
+  #   xmax = "group2",
+  #   y.position = "y.position",
+  #   tip.length = 0.01,
+  #   bracket.size = 0.4,
+  #   size = 4
+  # ) +
   scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.1))) +
   coord_cartesian(clip = "off") +
   annotate(
-    "text", x = 1.5, y = 0, label = "Retrospective",
-    vjust = 5, size = 5, fontface = "bold"
+    "text", x = 1.5, y = 0, label = "pCS",
+    vjust = 9, size = 5, fontface = "bold"
   ) +
   annotate(
-    "text", x = 3.5, y = 0, label = "Confirmatory",
-    vjust = 5, size = 5, fontface = "bold"
+    "text", x = 3.5, y = 0, label = "eCS",
+    vjust = 9, size = 5, fontface = "bold"
   ) +
   theme_prism() +
   theme(
     legend.position = "none",
     axis.text = element_text(size = 14),
-    axis.text.x = element_text(vjust = 0.5),
+    axis.text.x = element_text(vjust = 0.5, angle = 45),
     axis.ticks.x = element_blank(),
-    axis.title.y = element_text(size = 16),
+    axis.title.y = element_text(size = 12),
+    axis.title.x = element_text(size = 12),
     plot.margin = margin(10, 40, 50, 10)
   )
 
 comb_decide_exernal_eu_plot
 
-saveRDS(comb_decide_exernal_eu_plot, file.path(panels_dir, "comb_decide_exernal_eu_plot.rds"))   # ADD
+saveRDS(comb_decide_exernal_eu_plot, file.path(panels_dir, "comb_decide_exernal_eu_plot.rds"))   
 
 ggsave(
   filename = file.path(save_dir_external, "eu_plot_retrospective_decide.png"),
@@ -1060,7 +1113,7 @@ replication_matrix_retrospective <- retrospective_all[, .(
   `Exploratory g in confirmatory CI` = ci_agreement,
   # `Exploratory g in confirmatory PI` = exploratory_within_confirmatory_PI,
   `Exploratory and confirmatory in the same direction` = direction_agreement,
-  `Skeptical p < 0.05` = sceptical_sig,
+  `Sceptical p < 0.05` = sceptical_sig,
   `Both p < 0.05 & Same Direction` = ttest_sig,
   `Small Telescopes` = small_telescope_confirmed,
   `Confirmatory larger than its SDE` = sde_confirmed
@@ -1108,7 +1161,7 @@ heatmap_plot_ext <- ggplot(replication_long_retrospective, aes(x = plot_id, y = 
       "Confirmatory larger than its SDE",
       "Small Telescopes",
       "Both p < 0.05 & Same Direction",
-      "Skeptical p < 0.05",
+      "Sceptical p < 0.05",
       "Exploratory and confirmatory in the same direction",
       # "Exploratory g in confirmatory PI",
       "Exploratory g in confirmatory CI"
@@ -1118,7 +1171,7 @@ heatmap_plot_ext <- ggplot(replication_long_retrospective, aes(x = plot_id, y = 
       "Confirmatory larger than its SDE" = "Confirmatory ES > mDES",
       "Small Telescopes" = "Small Telescopes",
       "Both p < 0.05 & Same Direction" = "Significant & Same Direction",
-      "Skeptical p < 0.05" = "Skeptical p-value",
+      "Sceptical p < 0.05" = "Sceptical p-value",
       "Exploratory and confirmatory in the same direction" = "Same Direction",
       # "Exploratory g in confirmatory PI" = "Exploratory ES within c-PI ",
       "Exploratory g in confirmatory CI" = "Exploratory ES within c-CI"
@@ -1181,7 +1234,7 @@ y_order <- rev(c(
   "Confirmatory larger than its SDE",
   "Small Telescopes",
   "Both p < 0.05 & Same Direction",
-  "Skeptical p < 0.05",
+  "Sceptical p < 0.05",
   "Exploratory and confirmatory in the same direction",
   # "Exploratory g in confirmatory PI",
   "Exploratory g in confirmatory CI"
@@ -1193,7 +1246,7 @@ y_labels <- c(
   "Confirmatory larger than its SDE"                     = "Confirmatory ES > mDES",
   "Small Telescopes"                                     = "Small Telescopes",
   "Both p < 0.05 & Same Direction"                       = "Significant & Same Direction",
-  "Skeptical p < 0.05"                                   = "Skeptical p-value",
+  "Sceptical p < 0.05"                                   = "Sceptical P-value",
   "Exploratory and confirmatory in the same direction"   = "Same Direction",
   # "Exploratory g in confirmatory PI"                     = "Exploratory ES within c-PI",
   "Exploratory g in confirmatory CI"                     = "Exploratory ES within c-CI"
@@ -1214,79 +1267,93 @@ shared_theme <- list(
 )
 replication_long_decide[, success_char := as.character(as.logical(success))]
 
-# Right panel: Confirmatory
+status_colors <- c(
+  "Met (pCS)" = "#00AFBB",
+  "Met (eCS)" = "#E7B800",
+  "Not Met"   = "#D7D7D7"
+)
+
+replication_long_decide[, status := ifelse(success_char == "TRUE", "Met (pCS)", "Not Met")]
+replication_long_retrospective[, status := ifelse(success_char == "TRUE", "Met (eCS)", "Not Met")]
+
+shared_fill_scale <- scale_fill_manual(
+  values = status_colors,
+  name   = "Criterion Status",
+  limits = names(status_colors),   # forces identical scale definition in both plots
+  drop   = FALSE
+)
+
+# Left panel: Confirmatory
 p_decide <- ggplot(
   replication_long_decide,
-  aes(x = project_letter, y = criterion, fill = success_char)
+  aes(x = project_letter, y = criterion, fill = status)
 ) +
   geom_tile(color = "white", linewidth = 0.8, width = 0.85, height = 0.85) +
-  scale_fill_manual(
-    values   = c("TRUE" = "#00AFBB", "FALSE" = "#D7D7D7"),
-    labels   = c("TRUE" = "Met (Confirmatory)", "FALSE" = "Not met"),
-    name     = "Criterion status",
-    na.value = "#D7D7D7"
-  ) +
+  shared_fill_scale  +
   scale_x_discrete(position = "bottom") +
   scale_y_discrete(drop = FALSE, limits = y_order, labels = y_labels) +
   labs(x = NULL, y = NULL) +
-  ggtitle("Confirmatory Studies") +
+  coord_equal() +
+  ggtitle("pCS") +
   shared_theme +
   theme(
-    axis.text.x  = element_text(size = 16, face = "bold", color = "black"),
-    axis.text.y  = element_blank(),
-    axis.ticks.y = element_blank(),
-    plot.title   = element_text(size = 30, face = "bold", hjust = 0.5,
-                                margin = margin(b = 8)),
+    axis.text.x  = element_text(face = "bold", color = "black"),   
+    axis.text.y  = element_text(hjust = 1, color = "black"),       
+    plot.title   = element_text(face = "bold", hjust = 0.5, margin = margin(b = 8)),
     plot.margin  = margin(10, 10, 10, 5, "pt")
   )
+p_decide
 
 replication_long_retrospective[, success_char := as.character(as.logical(success))]
-# Left panel: Retrospective
+# Right panel: Retrospective
 p_retro <- ggplot(
   replication_long_retrospective,
-  aes(x = factor(id), y = criterion, fill = success_char)
+  aes(x = factor(plot_id), y = criterion, fill = status)
 ) +
   geom_tile(color = "white", linewidth = 0.8, width = 0.85, height = 0.85) +
-  scale_fill_manual(
-    values   = c("TRUE" = "#E7B800", "FALSE" = "#D7D7D7"),
-    labels   = c("TRUE" = "Met (Retrospective)", "FALSE" = "Not met"),
-    name     = "Criterion status",
-    na.value = "#D7D7D7"
-  ) +
+  shared_fill_scale +
   scale_x_discrete(position = "bottom") +
   scale_y_discrete(drop = FALSE, limits = y_order, labels = y_labels) +
   labs(x = NULL, y = NULL) +           # no bottom title
-  ggtitle("Retrospective Projects") +  # title at top instead
+  coord_equal() +
+  ggtitle("eCS") +  # title at top instead
   shared_theme +
   theme(
-    axis.text.x  = element_text(size = 16, face = "bold", color = "black"),
-    axis.text.y  = element_text(size = 16, hjust = 1, color = "black"),
-    plot.title   = element_text(size = 30, face = "bold", hjust = 0.5,
+    axis.text.x  = element_text(face = "bold", color = "black"),
+    axis.text.y  = element_blank(),
+    axis.ticks.y = element_blank(),
+    plot.title   = element_text(face = "bold", hjust = 0.5,
                                 margin = margin(b = 8)),
     plot.margin  = margin(10, 5, 10, 10, "pt")
   )
+p_retro
 
 
-# Combine with patchwork
-# Width ratio: confirmatory has 4 cols (A–D), retrospective has 9 → ratio ~ 4:9
-combined_heatmap_plot <- p_retro + p_decide +
-  plot_layout(
-    widths = c(9, 10),   # adjust to match column counts
-    guides = "collect"
-  ) &
-  theme(
-    legend.position      = "bottom",
-    legend.title         = element_text(size = 18, face = "bold"),
-    legend.text          = element_text(size = 17),
-    legend.key.size      = unit(0.6, "cm"),
-    legend.box.spacing   = unit(0.3, "cm"),
-    plot.title           = element_text(size = 32, face = "bold", hjust = 0.5,
-                                        margin = margin(b = 8))
-  )
+dummy_legend_data <- data.frame(
+  x = 1:3,
+  y = 1:3,
+  status = factor(c("Met (pCS)", "Met (eCS)", "Not Met"), levels = names(status_colors))
+)
+
+legend_plot <- ggplot(dummy_legend_data, aes(x, y, fill = status)) +
+  geom_tile() +
+  shared_fill_scale +
+  theme(legend.position = "bottom")
+
+shared_legend <- get_legend(legend_plot)
+
+combined_heatmap_plot <- (p_decide + p_retro 
+                          # + plot_layout(widths = c(10, 9))
+                          ) /
+  wrap_elements(full = 
+                  ggplot() + theme_void() +
+                  inset_element(shared_legend, left = 0.35, right = 0.85, bottom = 0, top = 1)
+  ) +
+  plot_layout(heights = c(1, 0.08))
 
 combined_heatmap_plot
 
-saveRDS(combined_heatmap_plot, file.path(panels_dir, "combined_heatmap_plot.rds"))   # ADD
+saveRDS(combined_heatmap_plot, file.path(panels_dir, "combined_heatmap_plot.rds"))
 
 ggsave(
   filename = file.path(save_dir_external, "replication_heatmap_combined.png"),
@@ -1414,6 +1481,17 @@ setnames(decide_sde_sum_n, "project_letter", "id")
 
 combined_sde <- rbind(decide_sde_sum_n, retrospective_sde_sum_n)
 
+sample_size_scale_factors <- combined_sde[, .(
+  median_n = median(n1_total + n2_total, na.rm = TRUE)
+), by = .(dataset, stage)]
+
+sample_size_scale_factors_wide <- dcast(
+  sample_size_scale_factors,
+  dataset ~ stage,
+  value.var = "median_n"
+)
+
+sample_size_scale_factors_wide[, scale_factor := `Multi-lab` / Exploratory]
 # Build combined group variable
 combined_sde$group <- interaction(
   combined_sde$dataset,
@@ -1425,10 +1503,10 @@ combined_sde$group <- interaction(
 combined_sde$group <- factor(
   combined_sde$group,
   levels = c(
-    "retrospective - exploratory",
-    "retrospective - multi lab",
     "DECIDE - exploratory",
-    "DECIDE - confirmatory"
+    "DECIDE - confirmatory",
+    "retrospective - exploratory",
+    "retrospective - multi lab"
   )
 )
 
@@ -1436,6 +1514,7 @@ combined_sde[stage == "confirmatory", stage := "Multi-lab"]
 combined_sde[stage == "exploratory", stage := "Exploratory"]
 combined_sde[stage == "multi lab", stage := "Multi-lab"]
 
+write.csv(combined_sde, here("results", "combined_sde.csv"), row.names = FALSE)
 
 stat_table_sde <- make_pw_wilcox_stat_tbl(
   data = combined_sde,
@@ -1449,6 +1528,7 @@ stat_table_sde_selected <- stat_table_sde[
     group1 == "retrospective - multi lab" & group2 == "DECIDE - confirmatory"
 ]
 
+##### SDE plot ####
 combined_sde_decide_retrospective_plot <-
   ggplot(
     combined_sde,
@@ -1478,50 +1558,52 @@ combined_sde_decide_retrospective_plot <-
   scale_x_discrete(
     labels = c(
       "retrospective - exploratory" = "Exploratory",
-      "retrospective - multi lab"   = "Multi-lab",
+      "retrospective - multi lab"   = "Confirmatory",
       "DECIDE - exploratory"        = "Exploratory",
-      "DECIDE - confirmatory"       = "Multi-lab"
+      "DECIDE - confirmatory"       = "Confirmatory"
     )
   ) +
   labs(
     title = NULL,
     x = NULL,
-    y = "Smallest Detectable Effect Size (SDE)",
+    y = "Smallest Detectable\n Effect Size (SDE)",
     fill = NULL
   ) +
-  ggpubr::stat_pvalue_manual(
-    stat_table_sde_selected,
-    label = "p_label",
-    xmin = "group1",
-    xmax = "group2",
-    y.position = "y.position",
-    tip.length = 0.01,
-    bracket.size = 0.4,
-    size = 4
-  ) +
+  # ggpubr::stat_pvalue_manual(
+  #   stat_table_sde_selected,
+  #   label = "p_label",
+  #   xmin = "group1",
+  #   xmax = "group2",
+  #   y.position = "y.position",
+  #   tip.length = 0.01,
+  #   bracket.size = 0.4,
+  #   size = 4
+  # ) +
   scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.1))) +
   coord_cartesian(clip = "off") +
   annotate(
-    "text", x = 1.5, y = 0, label = "Retrospective",
-    vjust = 5, size = 5, fontface = "bold"
+    "text", x = 1.5, y = 0, label = "pCS",
+    vjust = 8, size = 5, fontface = "bold"
   ) +
   annotate(
-    "text", x = 3.5, y = 0, label = "Confirmatory",
-    vjust = 5, size = 5, fontface = "bold"
+    "text", x = 3.5, y = 0, label = "eCS",
+    vjust = 8, size = 5, fontface = "bold"
   ) +
   theme_prism() +
   theme(
     legend.position = "none",
-    axis.text = element_text(size = 14),
-    axis.text.x = element_text(vjust = 0.5),
+    axis.text    = element_text(size = 14),
+    axis.text.x  = element_text(angle = 45, hjust = 1, vjust = 1, margin = margin(t = 2)),
+    axis.text.y  = element_text(margin = margin(r = 4)),
     axis.ticks.x = element_blank(),
-    axis.title.y = element_text(size = 16),
-    plot.margin = margin(10, 40, 50, 10)
+    axis.ticks.length = unit(2.75, "pt"),
+    axis.title.y = element_text(margin = margin(r = 0.002)),
+    plot.margin  = margin(20, 40, 60, 0)
   )
 
 combined_sde_decide_retrospective_plot
 
-saveRDS(combined_sde_decide_retrospective_plot, file.path(panels_dir, "combined_sde_decide_retrospective_plot.rds"))   # ADD
+saveRDS(combined_sde_decide_retrospective_plot, file.path(panels_dir, "combined_sde_decide_retrospective_plot.rds"))
 
 ggsave(
   filename = file.path(save_dir_external, "combined_sde_decide_retrospective_plot.png"),
@@ -1530,6 +1612,8 @@ ggsave(
   height = 6,
   dpi = 300
 )
+
+combined_iv_decide_retrospective$iv_score <- as.numeric(as.character(combined_iv_decide_retrospective$iv_score))
 
 kruskal.test(iv_score ~ group, data = combined_iv_decide_retrospective)
 
@@ -1613,14 +1697,15 @@ hedges_by_project_retrospective_plot <- ggplot(
     labels = x_breaks$plot_id,
     expand = expansion(mult = c(0.02, 0.02))
   ) +
+  scale_y_continuous(limits = c(-3, 6)) +
   scale_color_manual(
     values = c(
-      Exploratory = scales::alpha("#CC3300", 0.9),
-      Multi_lab   = "#E7B800"
+      Exploratory = scales::alpha("#8A6D1F", 0.9),  
+      Multi_lab   = "#E8B84B"       
     ),
     labels = c(
       Exploratory = "Exploratory",
-      Multi_lab   = "Multi-lab"
+      Multi_lab   = "Confirmatory"
     )
   ) +
   scale_shape_manual(
@@ -1630,27 +1715,28 @@ hedges_by_project_retrospective_plot <- ggplot(
     ),
     labels = c(
       Exploratory = "Exploratory",
-      Multi_lab   = "Multi-lab"
+      Multi_lab   = "Confirmatory"
     )
   ) +
   labs(
-    x = "Retrospective Dataset",
+    x = "eCS",
     y = "Effect Size (Hedge's g)",
     color = "Stage",
     shape = "Stage"
   ) +
   coord_cartesian(clip = "off") +
   # theme_minimal(base_family = "Arial", base_size = 22) +
+  theme_prism() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank()
-  ) +
-  theme_prism()
+    panel.grid.minor.x = element_blank(),
+    legend.position = "bottom"
+  ) 
 
 hedges_by_project_retrospective_plot
 
-saveRDS(hedges_by_project_retrospective_plot, file.path(panels_dir, "hedges_effects_by_project_retrospective.rds"))   # ADD
+saveRDS(hedges_by_project_retrospective_plot, file.path(panels_dir, "hedges_effects_by_project_retrospective.rds"))   
 
 ggsave(
   filename = file.path(save_dir_external, "hedges_effects_by_project_retrospective.png"),
@@ -1670,7 +1756,7 @@ retrospective_dt_wide[
   )
 ]
 
-##### ES per project and stage with pooled multi-lab — Retrospective ####
+##### ES with pooled multi-lab — Retrospective ####
 
 # Prepare data: one exploratory row + one pooled multi-lab row per project
 retrospective_meta_plot <- rbindlist(list(
@@ -1726,12 +1812,12 @@ hedges_pooled_by_project_ext <- ggplot(
   ) +
   scale_color_manual(
     values = c(
-      "Exploratory" = scales::alpha("#CC3300", 0.9),
-      "Multi_lab"   = "#E7B800"
+      Exploratory = scales::alpha("#8A6D1F", 0.9),  
+      Multi_lab   = "#E8B84B"       
     ),
     labels = c(
       "Exploratory" = "Exploratory",
-      "Multi_lab"   = "Multi-lab (pooled)"
+      "Multi_lab"   = "Confirmatory"
     )
   ) +
   scale_shape_manual(
@@ -1741,15 +1827,17 @@ hedges_pooled_by_project_ext <- ggplot(
     ),
     labels = c(
       "Exploratory" = "Exploratory",
-      "Multi_lab"   = "Multi-lab (pooled)"
+      "Multi_lab"   = "Confirmatory"
     )
   ) +
   scale_x_continuous(
     breaks = sort(unique(retrospective_meta_plot$base_x)),
     labels = levels(retrospective_meta_plot$plot_id)
+    # limits = c(0.5, 10.5)
   ) +
+  scale_y_continuous(breaks = seq(-4, 6, by = 2)) +
   labs(
-    x     = "Retrospective Dataset",
+    x     = "eCS",
     y     = "Effect Size (Hedges' g)",
     color = "Stage",
     shape = "Stage"
@@ -1758,12 +1846,13 @@ hedges_pooled_by_project_ext <- ggplot(
   theme(
     axis.text.x        = element_text(hjust = 1),
     panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank()
+    panel.grid.minor.x = element_blank(),
+    legend.position = "bottom"
   )
 
 hedges_pooled_by_project_ext
 
-saveRDS(hedges_pooled_by_project_ext, file.path(panels_dir, "hedges_pooled_by_project_ext.rds"))   # ADD
+saveRDS(hedges_pooled_by_project_ext, file.path(panels_dir, "hedges_pooled_by_project_ext.rds"))   
 
 ggsave(
   filename = file.path(save_dir_external, "hedges_pooled_by_project_retrospective.png"),
@@ -1871,22 +1960,23 @@ combined_scatterplot_es <- ggplot(combined_retrospective_decide_g_casted,
   #                 segment.color = "grey50"
   # ) +
   scale_color_manual(
-    values = c("TRUE" = "#1F6F70", "FALSE" = "#B3B3B3"),
-    labels = c("TRUE" = "significant", "FALSE" = "not significant"),
-    name = "Meta-analytic p < 0.05"
+    values = c("TRUE" = "#E08D8D", "FALSE" = "#A6A6A6"),
+    labels = c("TRUE" = "Significant", "FALSE" = "Not Significant"),
+    name = "Meta-Analytic P < 0.05"
   ) +
   scale_shape_manual(
     values = c("DECIDE" = 15, "retrospective" = 17),
-    labels = c("DECIDE" = "Confirmatory", 
-               "retrospective" = "Retrospective"),
+    labels = c("DECIDE" = "pCS", 
+               "retrospective" = "eCS"),
     name = "Dataset"
   ) +
+  coord_fixed(ratio = 1) +
   # coord_fixed(ratio = 1, xlim = c(0, max_limit), ylim = c(0, max_limit), clip = "off") +
-  scale_x_continuous(limits = c(0, max_limit)) +
-  scale_y_continuous(limits = c(0, max_limit)) +
+  scale_x_continuous(limits = c(0, max_limit), breaks = seq(0, max_limit, by = 1)) +
+  scale_y_continuous(limits = c(0, 2.5),breaks = seq(0, 2.5, by = 1)) +
   labs(
     x = "|Exploratory Hedges'g|",
-    y = "|Multi-lab Hedges'g|"
+    y = "|Confirmatory Hedges'g|"
   ) +
   # scale_color_manual(values = c("retrospective" ="#E7B800", "DECIDE" = "#00AFBB"),
   #                   labels = c("retrospective" ="retrospective", "DECIDE" = "DECIDE"),
@@ -1894,16 +1984,15 @@ combined_scatterplot_es <- ggplot(combined_retrospective_decide_g_casted,
   #                   ) +
   theme_prism() +
   theme(
-    axis.text.x = element_text(size = 22, angle = 45, hjust = 1),
-    axis.text.y = element_text(size = 22),
-    axis.title.x = element_text(size = 22),
-    axis.title.y = element_text(size = 22),
+    axis.text.x = element_text(size = 9, angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 9),
+    axis.title.x = element_text(size = 10),
+    axis.title.y = element_text(size = 10),
     legend.position = "right",
     legend.box = "vertical",
     # legend.text = element_text(size = 22),
     # legend.title = element_text(size = 22),
-    plot.margin = margin(20, 20, 20, 20),
-    aspect.ratio = 1
+    plot.margin = margin(5, 5, 5, 5)
   )
 
 combined_scatterplot_es
@@ -1913,8 +2002,8 @@ combined_scatterplot_es
 legend <- get_legend(
   combined_scatterplot_es + 
     theme(legend.position = "right",
-          legend.text = element_text(size = 14),
-          legend.title = element_text(size = 14))
+          legend.text = element_text(size = 9),
+          legend.title = element_text(size = 10, face = "bold"))
 )
 
 # make scatter without legend for ggMarginal
@@ -1934,12 +2023,12 @@ final_scatter_plot <- plot_grid(
   marginal_plot,
   legend,
   nrow = 1,
-  rel_widths = c(1, 0.3, 0.1)
+  rel_widths = c(1, 0.35)
 )
 
 final_scatter_plot
 
-saveRDS(final_scatter_plot, file.path(panels_dir, "final_scatter_plot.rds"))   # ADD
+saveRDS(final_scatter_plot, file.path(panels_dir, "final_scatter_plot.rds"))   
 
 ggsave(
   filename = file.path(save_dir_external, "combined_scatterplot_es.png"),
@@ -1998,6 +2087,8 @@ combined_decide_retrospective_iv_effectsize_wide <- merge(
 
 setnames(combined_decide_retrospective_iv_effectsize_wide, "multilab", "multi_lab_es")
 setnames(combined_decide_retrospective_iv_effectsize_wide, "exploratory", "exploratory_es")
+combined_decide_retrospective_iv_effectsize_wide <- 
+  combined_decide_retrospective_iv_effectsize_wide[id != "K"] 
 
 # add CI columns from meta dt
 meta_combined <- rbindlist(list(
@@ -2084,9 +2175,9 @@ reg_table <- rbind(reg_table, derived_row)
 
 # Clean up term names
 reg_table[, term := c(
-  "Exploratory ES — Retrospective slope",
-  "Exploratory ES × Confirmatory (slope difference)",
-  "Exploratory ES — Confirmatory effective slope"
+  "Exploratory ES — eCS slope",
+  "Exploratory ES × pCS (slope difference)",
+  "Exploratory ES — pCS effective slope"
 )]
 
 # Store formatted table
@@ -2474,7 +2565,7 @@ zcurve_both[z > 6, z := 6]
 
 ## Fit z-curves: pooling the 2 datasets as it need at least z-scores in the fitting range)
 
-# ── Fit z-curve for exploratory (ERR meaningful here) ────────────────────────
+# Fit z-curve for exploratory (ERR meaningful here)
 # I can't do z-curve for confirmatory as it need at least 10 significant p-values and we have 9
 zfit_exploratory <- zcurve(p = combined_pval_long[
   stage == "exploratory" & !is.na(p_value), p_value
@@ -2510,8 +2601,10 @@ ERR      <- round(zfit_exploratory$coefficients["ERR"], 2)
 ERR_ci   <- round(quantile(zfit_exploratory$coefficients_boot$ERR, c(0.025, 0.975)), 2)
 err_label <- paste0("ERR = ", ERR, " [", ERR_ci[1], ", ", ERR_ci[2], "]")
 
-stage_colors <- c("exploratory" = "#CC3300", "confirmatory" = "#00AFBB")
-stage_labels <- c("exploratory" = "Exploratory", "confirmatory" = "Multi-lab")
+stage_colors <- c("exploratory" = "#E08D8D", "confirmatory" = "#A6A6A6")
+stage_labels <- c("exploratory" = "Exploratory", "confirmatory" = "Confirmatory")
+
+zcurve_both[, stage := factor(stage, levels = c("exploratory", "confirmatory"))]
 
 # exploratory fitted curve + both histograms
 zcurve_plot <- ggplot() +
@@ -2529,33 +2622,43 @@ zcurve_plot <- ggplot() +
   geom_line(
     data = fitted_expl[, density_scaled := density * n_expl * binwidth],
     aes(x = z, y = density_scaled),
-    color = "#CC3300",
+    color = "#E08D8D",
     linewidth = 1.2
   ) +
   geom_vline(
     xintercept = 1.96,
-    color = "gray40",
+    color = "#A6A6A6",
     linewidth = 0.8,
     linetype = "dashed"
   ) +
   annotate(
     "text", x = 3.8, y = Inf,
     label = err_label,
-    hjust = 0, vjust = 1.5,
-    size = 4, color = "#CC3300"
+    hjust = 0, vjust = 6,
+    size = 4, color = "#CC6E6E"
+  ) +
+  annotate(
+    "text", x = 1.96, y = Inf,
+    label = "Significant\n Tests →",
+    hjust = -0.05, vjust = 1.3,
+    size = 4, color = "black"
   ) +
   scale_fill_manual(values = stage_colors, labels = stage_labels) +
   scale_x_continuous(breaks = 0:6, limits = c(0, 6.2)) +
+  coord_cartesian(clip = "off") + # to avoid annotations being clipped off
   labs(x = "Z-score", y = "Count", fill = NULL, title = NULL) +
   theme_prism() +
   theme(
+    axis.ticks.length = unit(2.75, "pt"),
+    axis.title.y = element_text(margin = margin(r = 2)),
+    axis.text.y  = element_text(margin = margin(r = 2)),
     legend.position    = "bottom",
     panel.grid.major.x = element_blank()
   )
 
 zcurve_plot
 
-saveRDS(zcurve_plot, file.path(panels_dir, "zcurve_plot.rds"))   # ADD
+saveRDS(zcurve_plot, file.path(panels_dir, "zcurve_plot.rds"))
 
 ggsave(
   filename = file.path(save_dir_external, "zcurve_exploratory_vs_confirmatory.png"),
@@ -3501,25 +3604,31 @@ p5_ext <- ggplot(
   geom_vline(xintercept = 1, linetype = "dashed", color = "gray60") +
   geom_point(size = 3) +
   scale_color_manual(
-    values = c("FALSE" = "#7B2D8B", "TRUE" = "pink2"),
-    labels = c("FALSE" = "Typical", "TRUE" = "Atypical (p < 0.05)"),
+    values = c("FALSE" = "#333333", "TRUE" = "#B8B8B8"),
+    labels = c("FALSE" = "Typical Lab", "TRUE" = "Atypical Lab (P < 0.05)"),
     drop   = FALSE
   ) +
-  facet_wrap(~ metric) +
-  labs(x = "Distance statistic (Dᵢ)", y = "Retrospective Dataset" , title = NULL) +
+  scale_x_continuous(
+    limits = c(0, 2),         
+    breaks = seq(0, 2, by = 0.5)
+  ) +
+  # facet_wrap(~ metric) +
+  labs(x = "Distance Statistic (Dᵢ)", y = "eCS" , title = NULL) +
   shrinkage_theme() +
   theme(
     # axis.text.y     = element_blank(),
     # axis.ticks.y    = element_blank(),
     # axis.line.y     = element_blank(),
-    strip.text = element_blank(),
+    # strip.text = element_blank(),
     legend.position = "bottom",
-    legend.title    = element_blank()
+    legend.title    = element_blank(),
+    axis.ticks.length = unit(2.75, "pt"), 
+    axis.title.x = element_text(margin = margin(t = 4))
   )
 
 p5_ext
 
-saveRDS(p5_ext, file.path(panels_dir, "p5_ext.rds"))   # ADD
+saveRDS(p5_ext, file.path(panels_dir, "p5_ext.rds"))  
 
 ggsave(
   filename = file.path(save_dir_external, "atypical_labs_ext_plot.png"),
@@ -3844,18 +3953,51 @@ setDT(ext_long)
 set(ext_long, j = "plot_id", value = factor(ext_long$plot_id, levels = project_ord_ext))
 set(ext_long, j = "component", value = factor(ext_long$component,
                                               levels = c("Control stability", "Treatment response", "Variance inflation")))
+# Shared plot settings
+component_colors <- c(
+  "Control stability"  = "#8E7CC3",   # dusty lavender
+  "Treatment response" = "#6FA287",   # sage green
+  "Variance inflation" = "#B5563C"    # terracotta
+)
 
 p_shapley_ext <- ggplot(ext_long,
                         aes(x = phi, y = plot_id, fill = component)) +
   geom_col(position = "stack", width = 0.7) +
+  geom_point(
+    data = decomp_ext,
+    aes(x = total_shrinkage, 
+        y = factor(as.character(plot_id), levels = levels(ext_long$plot_id)), 
+        fill = "Total shrinkage", shape = "Total shrinkage"),
+    inherit.aes = FALSE,
+    size = 2.5,
+    color = "black"
+  ) +
+  scale_shape_manual(name = NULL, 
+                     values = c("Total shrinkage" = 23),
+                     labels = c("Total shrinkage" = "Total Shrinkage")
+  ) +
   geom_vline(xintercept = 0, color = "gray40", linewidth = 0.6) +
-  scale_fill_manual(values = component_colors) +
+  scale_fill_manual(
+    values = c(component_colors, "Total shrinkage" = "black"),
+    breaks = c("Total shrinkage", names(component_colors)),
+    labels = c(
+      "Total shrinkage"     = "Total Shrinkage",
+      "Control stability"   = "Control Stability",
+      "Treatment response"  = "Treatment Response",
+      "Variance inflation"  = "Variance Inflation"
+    )
+  ) +
   scale_x_continuous(
+    breaks = seq(-8, 8, by = 2),
     sec.axis = dup_axis(
-      breaks = c(-2, 4),
+      breaks = c(-4, 5),
       labels = c("← reducing", "contributing to shrinkage →"),
       name   = NULL
     )
+  ) +
+  guides(
+    fill  = guide_legend(nrow = 2, ncol = 2, byrow = TRUE, override.aes = list(shape = c(23, NA, NA, NA))),
+    shape = "none"
   ) +
   labs(
     x     = "Hedges' g",
@@ -3873,12 +4015,11 @@ p_shapley_ext <- ggplot(ext_long,
     panel.border         = element_blank(),
     axis.line.x.top      = element_blank(),
     axis.line.y.right    = element_blank(),
-    axis.text.x.top      = element_text(size = 14, margin = margin(b = 8))
+    axis.text.x.top      = element_text(size = 9, margin = margin(b = 4))
   )
-
 p_shapley_ext
 
-saveRDS(p_shapley_ext, file.path(panels_dir, "p_shapley_ext.rds"))   # ADD
+saveRDS(p_shapley_ext, file.path(panels_dir, "p_shapley_ext.rds"))
 
 ggsave(
   filename = file.path(save_dir_external, "shrinkage_shapley_decomp_ext.png"),
@@ -3914,3 +4055,399 @@ ggsave(
   height   = 7,
   dpi      = 300
 )
+
+
+##### Compare absolute vs. sign-projected Shapley decomposition. Retrospective dataset (eCS) ####
+
+
+
+# Recompute using decomp_ext signed coalition g-value
+decomp_compare_ext <- decomp_ext[, .(
+  plot_id = as.character(plot_id),
+  g_exp, g_conf,
+  
+  g0_signed    = g_exp,
+  g_c_signed   = hedges_g_from_parts(mu_ctrl_conf,  mu_treated_exp,  sd_exp_pooled,  n_ctrl_exp,  n_treated_exp),
+  g_t_signed   = hedges_g_from_parts(mu_ctrl_exp,   mu_treated_conf, sd_exp_pooled,  n_ctrl_exp,  n_treated_exp),
+  g_s_signed   = hedges_g_from_parts(mu_ctrl_exp,   mu_treated_exp,  sd_conf_pooled, n_ctrl_conf, n_treated_conf),
+  g_ct_signed  = hedges_g_from_parts(mu_ctrl_conf,  mu_treated_conf, sd_exp_pooled,  n_ctrl_exp,  n_treated_exp),
+  g_cs_signed  = hedges_g_from_parts(mu_ctrl_conf,  mu_treated_exp,  sd_conf_pooled, n_ctrl_conf, n_treated_conf),
+  g_ts_signed  = hedges_g_from_parts(mu_ctrl_exp,   mu_treated_conf, sd_conf_pooled, n_ctrl_conf, n_treated_conf),
+  g_cts_signed = g_conf
+)]
+
+# Compute both versions row by row
+results_list_ext <- lapply(seq_len(nrow(decomp_compare_ext)), function(i) {
+  row <- decomp_compare_ext[i]
+  s <- sign(row$g0_signed)  # sign anchor = exploratory direction
+  
+  # ORIGINAL: v(S) = |g(S)|
+  orig <- compute_shapley(
+    abs(row$g0_signed), abs(row$g_c_signed), abs(row$g_t_signed), abs(row$g_s_signed),
+    abs(row$g_ct_signed), abs(row$g_cs_signed), abs(row$g_ts_signed), abs(row$g_cts_signed)
+  )
+  total_orig <- abs(row$g0_signed) - abs(row$g_cts_signed)
+  
+  # FIX: v(S) = sign(g_exp) * g(S)
+  fixed <- compute_shapley(
+    s * row$g0_signed, s * row$g_c_signed, s * row$g_t_signed, s * row$g_s_signed,
+    s * row$g_ct_signed, s * row$g_cs_signed, s * row$g_ts_signed, s * row$g_cts_signed
+  )
+  # Sign-projected shrinkage: |g_exp| - sign(g_exp)*g_conf
+  # Equals |g_exp| - |g_conf| when signs agree, but correctly detects full
+  # reversals as maximal shrinkage instead of scoring them as zero/negative like the older |g_exp| - |g_conf|
+  total_fixed <- s * row$g0_signed - s * row$g_cts_signed
+  
+  data.table(
+    plot_id               = row$plot_id,
+    sign_reversal         = sign(row$g0_signed) != sign(row$g_cts_signed),
+    
+    total_shrinkage_orig  = round(total_orig, 3),
+    total_shrinkage_fixed = round(total_fixed, 3),
+    
+    phi_ctrl_orig     = round(orig$phi_ctrl, 3),
+    phi_ctrl_fixed    = round(fixed$phi_ctrl, 3),
+    
+    phi_treated_orig  = round(orig$phi_treated, 3),
+    phi_treated_fixed = round(fixed$phi_treated, 3),
+    
+    phi_sd_orig       = round(orig$phi_sd, 3),
+    phi_sd_fixed      = round(fixed$phi_sd, 3)
+  )
+})
+
+comparison_dt_ext <- rbindlist(results_list_ext)
+
+# Check that additivity holds under both formulas
+comparison_dt_ext[, check_orig  := round(phi_ctrl_orig + phi_treated_orig + phi_sd_orig - total_shrinkage_orig, 6)]
+comparison_dt_ext[, check_fixed := round(phi_ctrl_fixed + phi_treated_fixed + phi_sd_fixed - total_shrinkage_fixed, 6)]
+
+print(comparison_dt_ext)
+
+# Flag which projects change meaningfully
+comparison_dt_ext[, total_changed := total_shrinkage_orig != total_shrinkage_fixed]
+comparison_dt_ext[, attribution_changed :=
+                    (phi_ctrl_orig != phi_ctrl_fixed) |
+                    (phi_treated_orig != phi_treated_fixed) |
+                    (phi_sd_orig != phi_sd_fixed)
+]
+print(comparison_dt_ext[, .(plot_id, sign_reversal, total_changed, attribution_changed)])
+
+##### Signed Shapley plots — eCS ####
+
+ext_long_signed <- melt(
+  comparison_dt_ext[, .(
+    plot_id,
+    `Control stability`  = phi_ctrl_fixed,
+    `Treatment response` = phi_treated_fixed,
+    `Variance inflation` = phi_sd_fixed
+  )],
+  id.vars = "plot_id", variable.name = "component", value.name = "phi"
+)
+setDT(ext_long_signed)
+
+set(ext_long_signed, j = "plot_id", value = factor(ext_long_signed$plot_id, levels = project_ord_ext))
+set(ext_long_signed, j = "component", value = factor(ext_long_signed$component,
+                                                     levels = c("Control stability", "Treatment response", "Variance inflation")))
+
+p_shapley_ext_signed <- ggplot(ext_long_signed, aes(x = phi, y = plot_id, fill = component)) +
+  geom_col(position = "stack", width = 0.7) +
+  geom_point(
+    data = comparison_dt_ext,
+    aes(x = total_shrinkage_fixed,
+        y = factor(plot_id, levels = levels(ext_long_signed$plot_id)),
+        fill = "Total shrinkage", shape = "Total shrinkage"),
+    inherit.aes = FALSE,
+    size = 2.5,
+    color = "black"
+  ) +
+  scale_shape_manual(name = NULL,
+                     values = c("Total shrinkage" = 23),
+                     labels = c("Total shrinkage" = "Total Shrinkage")
+  ) +
+  geom_vline(xintercept = 0, color = "gray40", linewidth = 0.6) +
+  scale_fill_manual(
+    values = c(component_colors, "Total shrinkage" = "black"),
+    breaks = c("Total shrinkage", names(component_colors)),
+    labels = c(
+      "Total shrinkage"     = "Total Shrinkage",
+      "Control stability"   = "Control Stability",
+      "Treatment response"  = "Treatment Response",
+      "Variance inflation"  = "Variance Inflation"
+    )
+  ) +
+  scale_x_continuous(
+    sec.axis = dup_axis(
+      breaks = c(-4, 5),
+      labels = c("← reducing", "contributing to shrinkage →"),
+      name   = NULL
+    )
+  ) +
+  guides(
+    fill  = guide_legend(nrow = 2, ncol = 2, byrow = TRUE, override.aes = list(shape = c(23, NA, NA, NA))),
+    shape = "none"
+  ) +
+  labs(
+    x     = "Hedges' g",
+    y     = NULL,
+    fill  = NULL,
+    title = NULL
+  ) +
+  theme_prism() +
+  theme(
+    legend.position      = "bottom",
+    panel.grid.major.x   = element_line(color = "gray90"),
+    panel.grid.major.y   = element_blank(),
+    axis.ticks.x.top     = element_blank(),
+    axis.ticks.y         = element_blank(),
+    panel.border         = element_blank(),
+    axis.line.x.top      = element_blank(),
+    axis.line.y.right    = element_blank(),
+    axis.text.x.top      = element_text(size = 9, margin = margin(b = 4))
+  )
+
+p_shapley_ext_signed
+
+p_total_ext_signed <- ggplot(comparison_dt_ext, aes(x = total_shrinkage_fixed,
+                                                    y = factor(plot_id, levels = project_ord_ext))) +
+  geom_col(fill = "#4C9BE8", width = 0.7) +
+  geom_vline(xintercept = 0, color = "gray40", linewidth = 0.6) +
+  labs(
+    x     = "|exploratory g| − sign(exploratory g)·confirmatory g",
+    y     = NULL,
+    title = NULL
+  ) +
+  theme_prism() +
+  theme(
+    panel.grid.major.x = element_line(color = "gray90"),
+    panel.grid.major.y = element_blank()
+  )
+
+p_comb_ext_signed <- p_total_ext_signed + p_shapley_ext_signed + plot_layout(ncol = 2, widths = c(1, 2))
+p_comb_ext_signed
+
+saveRDS(p_shapley_ext_signed, file.path(panels_dir, "p_shapley_ext_signed.rds"))
+
+ggsave(
+  filename = file.path(save_dir_external, "shrinkage_shapley_decomp_ext_signed.png"),
+  plot     = p_comb_ext_signed,
+  width    = 14,
+  height   = 7,
+  dpi      = 300
+)
+
+# Bayesian analyses -------------------------------------------------------
+
+##### mIV data ####
+
+#read in data for confirmatory studies 
+conf_iv_data <- read.csv(here("results", "combined_iv_decide_retrospective.csv"))
+
+conf_iv_data$stage[conf_iv_data$stage == "Multi_lab"] <- "Confirmatory"
+conf_iv_data$dataset[conf_iv_data$dataset == "DECIDE"] <- "pCS"
+conf_iv_data$dataset[conf_iv_data$dataset == "retrospective"] <- "eCS"
+
+conf_iv_data$iv_score <- ordered(conf_iv_data$iv_score)
+
+conf_iv_data$stage <- factor(conf_iv_data$stage,
+                             levels = c("Exploratory", "Confirmatory"))
+conf_iv_data$dataset <- factor(conf_iv_data$dataset,
+                               levels = c("pCS", "eCS"))
+
+my_priors <- c(
+  prior(normal(0, 1.5), class = "b"),
+  prior(normal(0, 1.5), class = "Intercept")
+)
+
+m.1 <- brm(
+  formula = iv_score ~  stage*dataset+(1|project_id),
+  data = conf_iv_data,
+  prior = my_priors,
+  family = cumulative ("probit"),
+  chains = 4,          
+  cores = 4,           
+  iter = 2000,         
+  seed = 42,
+  save_pars = save_pars(all = TRUE)
+)
+summary(m.1)
+
+# 1. Create a conditions dataframe for all levels of 'dataset'
+conds <- make_conditions(m.1, vars = "dataset")
+
+# 2. Generate the conditional effects plot
+conditional_effects(
+  m.1, 
+  effects = "stage", 
+  conditions = conds, 
+  categorical = TRUE
+)
+# Plots actual data (y) vs. simulated data from the model (yrep)
+pp_check(m.1, type = "bars", ndraws = 100) +
+  ggplot2::labs(title = "Posterior Predictive Check: Actual vs. Predicted")
+
+# Add LOO criterion to the model
+m.1 <- add_criterion(m.1, "loo", moment_match = TRUE, overwrite = TRUE)
+
+# Print the LOO results
+loo(m.1)
+
+hypothesis(m.1, "stageConfirmatory:dataseteCS > 0")
+
+my_table <- modelsummary(
+  m.1,
+  output = "flextable",
+  estimate = "estimate",
+  statistic = "conf.int",
+  conf_level = 0.95,
+  fmt = 2,
+  title = "Supplementary Table 13. Bayesian Ordinal Probit Regression of Internal Validity (IV) Score",
+  coef_rename = c(
+    "b_Intercept[1]" = "Threshold 1",
+    "b_Intercept[2]" = "Threshold 2",
+    "b_Intercept[3]" = "Threshold 3",
+    "b_Intercept[4]" = "Threshold 4",
+    "b_Intercept[5]" = "Threshold 5",
+    "b_Intercept[6]" = "Threshold 6",
+    "b_Intercept[7]" = "Threshold 7",
+    "b_Intercept[8]" = "Threshold 8",
+    "b_stageConfirmatory" = "Stage: Confirmatory (vs. Exploratory)",
+    "b_dataseteCS" = "Dataset: eCS (vs. pCS)",
+    "b_stageConfirmatory:dataseteCS" = "Stage \u00d7 Dataset interaction",
+    "sd_project_id__Intercept" = "SD (random intercept, project)"
+  )
+)
+
+my_table <- set_table_properties(my_table, width = 1, layout = "autofit")
+
+save_as_docx(my_table, path = here("results", "bayesian_model_results_mIV.docx"))
+
+##### SDE ####
+conf_sde_data <- read.csv(here("results", "combined_sde.csv"))
+
+conf_sde_data$stage[conf_sde_data$stage == "Multi-lab"] <- "Confirmatory"
+conf_sde_data$dataset[conf_sde_data$dataset == "DECIDE"] <- "pCS"
+conf_sde_data$dataset[conf_sde_data$dataset == "retrospective"] <- "eCS"
+
+conf_sde_data$stage <- factor(conf_sde_data$stage,
+                             levels = c("Exploratory", "Confirmatory"))
+conf_sde_data$dataset <- factor(conf_sde_data$dataset,
+                               levels = c("pCS", "eCS"))
+
+m.sde.1<-brm(sde ~ stage * dataset + (1|id), family=lognormal,
+             data = conf_sde_data,
+             save_pars = save_pars(all=T),
+             prior = my_priors)
+
+summary(m.sde.1)
+
+plot(pairs(m.sde.1))
+
+# 1. Create a conditions dataframe for all levels of 'dataset'
+conds <- make_conditions(m.sde.1, vars = "dataset")
+
+# 2. Generate the conditional effects plot
+conditional_effects(
+  m.sde.1, 
+  effects = "stage", 
+  conditions = conds
+)
+# Plots actual data (y) vs. simulated data from the model (yrep)
+pp_check(m.sde.1, ndraws = 100) +
+  ggplot2::labs(title = "Posterior Predictive Check: Actual vs. Predicted")
+
+# Add LOO criterion to the model
+m.sde.1 <- add_criterion(m.sde.1, "loo", moment_match = TRUE, overwrite = TRUE)
+
+# Print the LOO results
+loo(m.sde.1)
+
+hypothesis(m.sde.1,"stageConfirmatory:dataseteCS > 0")
+
+my_table_sde <- modelsummary(
+  m.sde.1,
+  output = "flextable",
+  estimate = "estimate",
+  statistic = "conf.int",
+  conf_level = 0.95,
+  fmt = 2,
+  title = "Supplementary Table 10. Bayesian Lognormal Regression of Standardized Detectable Effect Size (SDE)",
+  coef_rename = c(
+    "b_Intercept" = "Intercept",
+    "b_stageConfirmatory" = "Stage: Confirmatory (vs. Exploratory)",
+    "b_dataseteCS" = "Dataset: eCS (vs. pCS)",
+    "b_stageConfirmatory:dataseteCS" = "Stage \u00d7 Dataset interaction",
+    "sd_id__Intercept" = "SD (random intercept, id)",
+    "sigma" = "Residual SD (log scale)"
+  )
+)
+
+my_table_sde <- set_table_properties(my_table_sde, width = 1, layout = "autofit")
+
+save_as_docx(my_table_sde, path = here("results", "bayesian_model_results_sde.docx"))
+
+
+
+##### Experimental Units ####
+conf_eu_data <- read.csv(here("results", "combined_eu.csv"))
+
+conf_eu_data$stage[conf_eu_data$stage == "exploratory"] <- "Exploratory"
+conf_eu_data$stage[conf_eu_data$stage == "Multi_lab"] <- "Confirmatory"
+conf_eu_data$dataset[conf_eu_data$dataset == "DECIDE"] <- "pCS"
+conf_eu_data$dataset[conf_eu_data$dataset == "retrospective"] <- "eCS"
+
+conf_eu_data$stage <- factor(conf_eu_data$stage,
+                              levels = c("Exploratory", "Confirmatory"))
+conf_eu_data$dataset <- factor(conf_eu_data$dataset,
+                                levels = c("pCS", "eCS"))
+
+
+m.eu.1<-brm(eu ~ stage * dataset + (1|id), family=poisson,
+            data = conf_eu_data,
+            save_pars = save_pars(all=T),
+            prior = my_priors)
+
+summary(m.eu.1)
+
+conds <- make_conditions(m.eu.1, vars = "dataset")
+
+ggplot(data=conf_eu_data,aes(y=eu,x=stage))+geom_boxplot()+facet_wrap(~dataset)
+
+conditional_effects(
+  m.eu.1, 
+  effects = "stage", 
+  conditions = conds
+)
+
+pp_check(m.eu.1, ndraws = 100) +
+  ggplot2::labs(title = "Posterior Predictive Check: Actual vs. Predicted")
+
+# Add LOO criterion to the model
+m.eu.1 <- add_criterion(m.eu.1, "loo", moment_match = TRUE, overwrite = TRUE)
+
+# Print the LOO results
+loo(m.eu.1)
+
+hypothesis(m.eu.1,"stageConfirmatory>0")
+
+my_table_eu <- modelsummary(
+  m.eu.1,
+  output = "flextable",
+  estimate = "estimate",
+  statistic = "conf.int",
+  conf_level = 0.95,
+  fmt = 2,
+  title = "Supplemental Table 9. Bayesian Hierarchical Poisson Regression of Experimental Unit (EU) Count",
+  coef_rename = c(
+    "b_Intercept" = "Intercept",
+    "b_stageConfirmatory" = "Stage: Confirmatory (vs. Exploratory)",
+    "b_dataseteCS" = "Dataset: eCS (vs. pCS)",
+    "b_stageConfirmatory \u00d7 dataseteCS" = "Stage \u00d7 Dataset interaction",
+    "sd_id__Intercept" = "SD (random intercept, id)"
+  )
+)
+
+my_table_eu <- set_table_properties(my_table_eu, width = 1, layout = "autofit")
+
+save_as_docx(my_table_eu, path = here("results", "bayesian_model_results_eu.docx"))
+

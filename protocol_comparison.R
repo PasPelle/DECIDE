@@ -18,8 +18,8 @@ protocol_comparison[, row_id := fcase(
   detail == "Group allocation" & aspect == "Blinding",   "Blinded Allocation",
   
   # Controls
-  detail == "Sham mock naive",      "Sham/Mock/Naive control",
-  detail == "Comparator",           "Comparator control",
+  detail == "Sham mock naive",      "Sham/Mock/Naive Control",
+  detail == "Comparator",           "Comparator Control",
   detail == "Positive control",     "Positive Control",
   detail == "Negative control",     "Negative Control",
   
@@ -32,7 +32,7 @@ protocol_comparison[, row_id := fcase(
   
   # Randomization
   detail == "Randomization method",  "Randomization Method",
-  detail == "Data analysis scoring", "Randomized analysis",
+  detail == "Data analysis scoring", "Randomized Analysis",
   detail == "Intervention giving" & aspect == "Randomization", "Randomized Intervention",
   detail == "Group allocation" & aspect == "Randomization",    "Randomized Allocation",
   
@@ -70,9 +70,14 @@ protocol_comparison[, validity := factor(validity, levels = validity_levels)]
 protocol_comparison <- protocol_comparison[order(validity, aspect, row_id)]
 protocol_comparison[, row_id := factor(row_id, levels = unique(row_id))]
 
-
+protocol_comparison$phase <- factor(
+  protocol_comparison$phase,
+  levels = c("Exploratory Stage", "Confirmatory Stage")
+)
 
 # supervised heatmap ------------------------------------------------------
+
+##### raw plot ####
 heatmap_raw <- ggplot(
   protocol_comparison, 
   aes(
@@ -98,24 +103,26 @@ heatmap_raw <- ggplot(
     breaks   = c(0, 1)
   ) +
   labs(
-    x = "Confirmatory Studies",
+    x = "pCS",
     y = NULL,
     fill = "Score"
   ) +
   theme_minimal(base_size = 11) +
   theme(
-    axis.text.x = element_text(size = 18, angle = 45, hjust = 1),
+    axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5),
     axis.text.y = element_text(size = 12),
-    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.x = element_text(size = 10, face = "bold", vjust = 1.5),
     # Style the side labels (IV, EV, etc.)
     strip.text.y = element_text(size = 15, face = "bold", angle = 0), 
-    strip.text.x = element_text(size = 20, face = "bold"),
+    strip.text.x = element_text(size = 10, face = "bold"),
     panel.grid = element_blank(),
     panel.spacing = unit(0.2, "lines"), # Reduce gap between facets
     legend.position = "right"
   )
 
 heatmap_raw
+
+saveRDS(heatmap_raw, file.path(save_dir_decide, "panels", "heatmap_raw.rds"))
 
 ggsave(
   filename = file.path(save_dir_decide, "protocol_comparison_heatmap_raw.png"),
@@ -125,8 +132,6 @@ ggsave(
   dpi = 300,
   bg = "white"
 )
-
-saveRDS(heatmap_raw, file.path(save_dir_decide, "panels", "heatmap_raw.rds"))
 
 # Simplified supervised heatmap (only validity classification) -----------------------
 
@@ -280,6 +285,7 @@ unsupervised_heatmap <- Heatmap(
   row_names_side = "left",          # labels now on the left
   right_annotation = row_anno       # validity on the right
 )
+unsupervised_heatmap
 
 p_unsupervised_heatmap <- grid.grabExpr({
   draw(unsupervised_heatmap,
@@ -292,6 +298,9 @@ p_unsupervised_heatmap <- grid.grabExpr({
     gp = gpar(fontsize = 16, fontface = "bold")
   )
 })
+
+p_unsupervised_heatmap
+
 saveRDS(p_unsupervised_heatmap, file.path(save_dir_decide, "panels", "p_unsupervised_heatmap.rds"))
 
 # dev.off()
@@ -481,13 +490,13 @@ radar_plot <- ggradar(
   group.colours = c("#99E0E5", "#00AFBB"),
   group.line.width = 1.2,
   group.point.size = 3,
-  axis.label.size = 10,
+  axis.label.size = 5.5,
   # values.radar.size = 8,
-  legend.text.size = 24
+  legend.text.size = 4.2
 ) + 
   theme(
-  legend.text  = element_text(size = 25),
-  legend.title = element_text(size = 25)
+  legend.text  = element_text(size = 12, face = "bold"),
+  # legend.title = element_text(size = 12, face = "bold")
 )
 
 radar_plot
@@ -501,6 +510,5 @@ ggsave(
   bg = "white"
 )
 
-saveRDS(radar_plot, file.path(save_dir_decide, "panels", "radar_plot.rds"))   # ADD THIS LINE
-
+saveRDS(radar_plot, file.path(save_dir_decide, "panels", "radar_plot.rds")) 
 
