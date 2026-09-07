@@ -1022,6 +1022,11 @@ mcse_long <- melt(mcse_summary,
 
 cat("Maximum MCSE across all reported cells:", round(max(mcse_long$mcse, na.rm = TRUE), 4), "\n")
 cat("Median MCSE across all reported cells:", round(median(mcse_long$mcse, na.rm = TRUE), 4), "\n")
+
+# Minimum simulations underlying any single reported cell (after effect-size-class split)
+min_cell_n <- simulation_results[, .N, by = .(exploratory_n, shrinkage, expl_effect_size_class)][, min(N)]
+
+sqrt(0.25 / min_cell_n)  # worst-case Monte Carlo SE for the smallest cell
 cat("Smallest n underlying any reported cell:", min_cell_n, "\n")
 
 

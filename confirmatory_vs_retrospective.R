@@ -1483,7 +1483,7 @@ combined_sde <- rbind(decide_sde_sum_n, retrospective_sde_sum_n)
 
 sample_size_scale_factors <- combined_sde[, .(
   median_n = median(n1_total + n2_total, na.rm = TRUE)
-), by = .(dataset, stage)]
+), by = .(dataset, stage = fifelse(stage %in% c("confirmatory", "multi lab"), "confirmatory", stage))]
 
 sample_size_scale_factors_wide <- dcast(
   sample_size_scale_factors,
@@ -1491,7 +1491,8 @@ sample_size_scale_factors_wide <- dcast(
   value.var = "median_n"
 )
 
-sample_size_scale_factors_wide[, scale_factor := `Multi-lab` / Exploratory]
+sample_size_scale_factors_wide[, scale_factor := confirmatory / exploratory]
+
 # Build combined group variable
 combined_sde$group <- interaction(
   combined_sde$dataset,
@@ -4333,6 +4334,9 @@ conf_sde_data$stage <- factor(conf_sde_data$stage,
                              levels = c("Exploratory", "Confirmatory"))
 conf_sde_data$dataset <- factor(conf_sde_data$dataset,
                                levels = c("pCS", "eCS"))
+
+# Force-close any stray sink connections: this is when previous Stan compilation are interrupted
+# while (sink.number() > 0) sink(NULL)
 
 m.sde.1<-brm(sde ~ stage * dataset + (1|id), family=lognormal,
              data = conf_sde_data,

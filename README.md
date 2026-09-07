@@ -13,19 +13,21 @@ The DECIDE project (Decision-Enabling Confirmation of Innovative Discoveries and
 
 ## Repository Structure
 
+```
 DECIDE/
 ├── Main.R                                    # Master script — runs full pipeline
-├── packages.R                                # All package dependencies
-├── all_functions.R                           # Shared utility functions
-├── confirmatory_replication_assessment.R     # DECIDE confirmatory analysis
-├── confirmatory_vs_retrospective.R           # Comparison with retrospective dataset
-├── protocol_comparison.R                     # Validity scoring and radar plots
-├── simulation_replication_criteria.R         # Simulation framework
-├── data/                                     # Input data (see Data Availability)
-├── results/                                  # Output figures and tables
-├── simulation_results/                       # Simulation outputs per dataset
-├── renv.lock                                 # Package version lockfile
+├── packages.R                                 # All package dependencies
+├── all_functions.R                            # Shared utility functions
+├── confirmatory_replication_assessment.R      # DECIDE confirmatory analysis
+├── confirmatory_vs_retrospective.R            # Comparison with retrospective dataset
+├── protocol_comparison.R                      # Validity scoring and radar plots
+├── simulation_replication_criteria.R          # Simulation framework
+├── data/                                      # Input data (see Data Availability)
+├── results/                                   # Output figures and tables
+├── simulation_results/                        # Simulation outputs per dataset
+├── renv.lock                                  # Package version lockfile
 └── README.md
+```
 
 ## Reproducibility
 
@@ -47,20 +49,23 @@ source("Main.R")
 
 > **Note:** Scripts must be run in order via `Main.R`. Running individual scripts out of order may fail due to dependencies between scripts.
 
+> **Note on data:** Because the primary confirmatory study (pCS/DECIDE) data are unpublished, this repository includes a **synthetic (randomly generated) replacement** for the pCS mastersheet and SESOI files, matching their structure exactly (`MASTERSHEET_DECIDE_anonymized_DUMMY.csv`, `SESOI_DECIDE_anonymized_DUMMY.csv`; see `data_manifest.md`). This allows the confirmatory replication assessment pipeline to be run end-to-end and verified for reproducibility, but figures and results generated from this synthetic data are for pipeline-verification purposes only and will **not** match those reported in the manuscript.
+
 ### R Version
 R 4.5.1 — see `renv.lock` for exact package versions.
 
 ## Data Availability
 
-The anonymized input data required to reproduce the analyses are available at [Zenodo DOI — to be added upon publication]:
-
 | File | Description |
 |------|-------------|
-| `MASTERSHEET_DECIDE_anonymized.csv` | Raw animal study data for DECIDE confirmatory projects |
-| `SESOI_DECIDE_anonymized.csv` | Smallest effect sizes of interest per project |
-| `decide_mIV_anonymized.csv` | Minimal internal validity scores for DECIDE projects |
-| `mastersheet_external_studies.csv` | Retrospective multi-laboratory dataset |
-| `empyrical_effect_size_datasets/` | Empirical effect size distributions for simulation |
+| `MASTERSHEET_DECIDE_anonymized_DUMMY.csv` | Synthetic replacement for the pCS/DECIDE raw animal study mastersheet, matching its structure (see `data_manifest.md`) |
+| `SESOI_DECIDE_anonymized_DUMMY.csv` | Synthetic replacement for pCS smallest effect sizes of interest per project (see `data_manifest.md`) |
+| `decide_mIV_anonymized.csv` | Minimal internal validity scores for DECIDE (pCS) projects |
+| `mastersheet_external_studies.csv` | Retrospective (eCS) multi-laboratory dataset |
+| `protocol_comparison_anonymized.csv` | Protocol validity scoring data (internal, external, statistical, translational) |
+| `empyrical_effect_size_datasets/` | Empirical effect size distributions for the simulation framework |
+
+**Note on pCS raw data:** The primary confirmatory study (pCS/DECIDE) raw dataset is **not publicly available**, as the underlying studies are unpublished. Aggregated/summary data sufficient to verify the manuscript's reported results are available from the corresponding author upon reasonable request.
 
 Place all files in the `/data` folder before running the analysis.
 
@@ -91,6 +96,6 @@ MIT License — see `LICENSE.md` for details.
 
 ## Contact
 
-Pasquale Pellegrini  
-Berlin Institute of Health at Charité (BIH-QUEST)  
+Pasquale Pellegrini
+Berlin Institute of Health at Charité (BIH-QUEST)
 pasquale.pellegrini@charite.de
