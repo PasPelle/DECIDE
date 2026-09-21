@@ -96,6 +96,6 @@ MIT License — see `LICENSE.md` for details.
 
 ## Contact
 
-Pasquale Pellegrini
-Berlin Institute of Health at Charité (BIH-QUEST)
+Pasquale Pellegrini\
+Berlin Institute of Health at Charité (BIH-QUEST)\
 pasquale.pellegrini@bih-charite.de
