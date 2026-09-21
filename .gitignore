@@ -12,7 +12,9 @@ data/SESOI_DECIDE_anonymized.csv
 additional_checks.R
 deprecated.R
 figure_builder.R
-renv/
+renv/library/
+renv/staging/
+renv/sandbox/
 DECIDE-internal/
 results/
 simulation_results/
