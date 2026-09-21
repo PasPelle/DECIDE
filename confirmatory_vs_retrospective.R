@@ -503,7 +503,7 @@ decide_iv[, dataset := "DECIDE"]
 setnames(decide_iv, "Project_ID", "unique_lab")
 setnames(decide_iv, "IV_final", "iv_score")
 setnames(decide_iv, "Study_Type", "stage")
-decide_iv[trimws(unique_lab) == "", unique_lab := "K"]
+# decide_iv[trimws(unique_lab) == "", unique_lab := "K"]
 
 # retrospective: removed project 12 bc it was used for 2 mutli-lab outcomes coming from the same study (Llovera 2015) so I have deleted it to not double count the same IV
 retrospective_iv <- retrospective_dt[!is.na(iv_score) & id != 12,
