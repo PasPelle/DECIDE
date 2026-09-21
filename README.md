@@ -98,4 +98,4 @@ MIT License — see `LICENSE.md` for details.
 
 Pasquale Pellegrini
 Berlin Institute of Health at Charité (BIH-QUEST)
-pasquale.pellegrini@charite.de
+pasquale.pellegrini@bih-charite.de
